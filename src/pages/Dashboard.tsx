@@ -1,43 +1,30 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Dashboard as DashboardComponent } from "@/components/Dashboard";
+import { AdminToggle } from "@/components/AdminToggle";
 import { useToast } from "@/hooks/use-toast";
 
 export const Dashboard = () => {
   const [isAuthenticated] = useState(true); // Will be replaced with Clerk
-  const [userRole] = useState<'user' | 'admin'>('user'); // Will be managed by Clerk
+  const [userRole, setUserRole] = useState<'user' | 'admin'>('user'); // Will be managed by Clerk
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSellClick = () => {
-    toast({
-      title: "Sell Feature",
-      description: "Redirecting to sell page...",
-    });
-    // Navigate to sell page
+    navigate('/sell');
   };
 
   const handleBuyClick = () => {
-    toast({
-      title: "Buy Feature", 
-      description: "Redirecting to marketplace...",
-    });
-    // Navigate to marketplace
+    navigate('/marketplace');
   };
 
   const handleMyListingsClick = () => {
-    toast({
-      title: "My Listings",
-      description: "Redirecting to your listings...",
-    });
-    // Navigate to my listings
+    navigate('/my-listings');
   };
 
   const handleAdminClick = () => {
-    toast({
-      title: "Admin Panel",
-      description: "Redirecting to admin dashboard...",
-    });
-    // Navigate to admin panel
+    navigate('/admin');
   };
 
   const handleLogout = () => {
@@ -48,6 +35,14 @@ export const Dashboard = () => {
     // Handle logout with Clerk
   };
 
+  const handleToggleRole = () => {
+    setUserRole(userRole === 'admin' ? 'user' : 'admin');
+    toast({
+      title: "Role Changed", 
+      description: `Switched to ${userRole === 'admin' ? 'Student' : 'Admin'} mode`,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar 
@@ -55,13 +50,16 @@ export const Dashboard = () => {
         onLogoutClick={handleLogout}
         userName="John Student"
       />
-      <DashboardComponent
-        userRole={userRole}
-        onSellClick={handleSellClick}
-        onBuyClick={handleBuyClick}
-        onMyListingsClick={handleMyListingsClick}
-        onAdminClick={handleAdminClick}
-      />
+      <div className="max-w-6xl mx-auto p-6">
+        <AdminToggle userRole={userRole} onToggleRole={handleToggleRole} />
+        <DashboardComponent
+          userRole={userRole}
+          onSellClick={handleSellClick}
+          onBuyClick={handleBuyClick}
+          onMyListingsClick={handleMyListingsClick}
+          onAdminClick={handleAdminClick}
+        />
+      </div>
     </div>
   );
 };
