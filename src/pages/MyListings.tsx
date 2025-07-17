@@ -141,7 +141,7 @@ export const MyListings = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar isAuthenticated={true} userName="John Student" />
+      <Navbar />
       
       <div className="max-w-7xl mx-auto p-6">
         <div className="mb-6">
