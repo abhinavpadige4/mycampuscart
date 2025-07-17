@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 import { Product, CreateProductData } from '@/types/product'
 import { useAuth } from '@/hooks/useAuth'
@@ -39,7 +39,13 @@ export const useProducts = () => {
       const { data, error } = await query
 
       if (error) throw error
-      setProducts((data || []) as Product[])
+      
+      const typedProducts: Product[] = (data || []).map(item => ({
+        ...item,
+        status: item.status as 'active' | 'sold'
+      }))
+      
+      setProducts(typedProducts)
     } catch (error) {
       console.error('Error fetching products:', error)
       toast({
@@ -52,7 +58,7 @@ export const useProducts = () => {
     }
   }
 
-  const createProduct = async (productData: CreateProductData) => {
+  const createProduct = async (productData: CreateProductData): Promise<Product> => {
     if (!user) throw new Error('User not authenticated')
 
     try {
@@ -75,7 +81,10 @@ export const useProducts = () => {
         description: "Your item has been listed successfully.",
       })
 
-      return data as Product
+      return {
+        ...data,
+        status: data.status as 'active' | 'sold'
+      } as Product
     } catch (error) {
       console.error('Error creating product:', error)
       toast({
@@ -87,7 +96,7 @@ export const useProducts = () => {
     }
   }
 
-  const updateProduct = async (id: string, updates: Partial<Product>) => {
+  const updateProduct = async (id: string, updates: Partial<Product>): Promise<Product> => {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -103,7 +112,10 @@ export const useProducts = () => {
         description: "Product updated successfully.",
       })
 
-      return data as Product
+      return {
+        ...data,
+        status: data.status as 'active' | 'sold'
+      } as Product
     } catch (error) {
       console.error('Error updating product:', error)
       toast({
@@ -129,7 +141,6 @@ export const useProducts = () => {
         description: "Product deleted successfully.",
       })
 
-      // Remove from local state
       setProducts(products.filter(p => p.id !== id))
     } catch (error) {
       console.error('Error deleting product:', error)
@@ -142,7 +153,7 @@ export const useProducts = () => {
     }
   }
 
-  const fetchUserProducts = async (userId: string) => {
+  const fetchUserProducts = async (userId: string): Promise<Product[]> => {
     setLoading(true)
     try {
       const { data, error } = await supabase
@@ -152,7 +163,13 @@ export const useProducts = () => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      return (data || []) as Product[]
+      
+      const typedProducts: Product[] = (data || []).map(item => ({
+        ...item,
+        status: item.status as 'active' | 'sold'
+      }))
+      
+      return typedProducts
     } catch (error) {
       console.error('Error fetching user products:', error)
       toast({

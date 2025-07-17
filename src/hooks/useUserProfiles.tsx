@@ -30,7 +30,13 @@ export const useUserProfiles = () => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setUsers((data || []) as UserProfile[])
+      
+      const typedUsers: UserProfile[] = (data || []).map(item => ({
+        ...item,
+        role: item.role as 'user' | 'admin'
+      }))
+      
+      setUsers(typedUsers)
     } catch (error) {
       console.error('Error fetching users:', error)
       toast({
@@ -43,7 +49,7 @@ export const useUserProfiles = () => {
     }
   }
 
-  const createOrUpdateUserProfile = async () => {
+  const createOrUpdateUserProfile = async (): Promise<UserProfile | undefined> => {
     if (!user) return
 
     try {
@@ -66,7 +72,11 @@ export const useUserProfiles = () => {
         .single()
 
       if (error) throw error
-      return data as UserProfile
+      
+      return {
+        ...data,
+        role: data.role as 'user' | 'admin'
+      } as UserProfile
     } catch (error) {
       console.error('Error creating/updating user profile:', error)
     }
