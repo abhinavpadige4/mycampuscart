@@ -10,86 +10,23 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Search, Filter, ArrowLeft, Heart, MapPin } from "lucide-react";
-import { Product, CATEGORIES, LOCATIONS } from "@/types/product";
+import { CATEGORIES, LOCATIONS } from "@/types/product";
+import { useProducts } from "@/hooks/useProducts";
 
 export const Marketplace = () => {
   const navigate = useNavigate();
+  const { products, loading, fetchProducts } = useProducts();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedLocation, setSelectedLocation] = useState("all");
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-
-  // Mock data - replace with Supabase queries
-  useEffect(() => {
-    const mockProducts: Product[] = [
-      {
-        id: "1",
-        name: "Calculus Textbook - 3rd Edition",
-        price: 85,
-        description: "Excellent condition calculus textbook. Barely used, no highlighting or writing inside.",
-        category: "books",
-        image: "/placeholder.svg",
-        seller_id: "user1",
-        seller_name: "Sarah M.",
-        location: "North Campus",
-        whatsapp_number: "+1234567890",
-        created_at: "2024-01-15T10:00:00Z",
-        status: "active"
-      },
-      {
-        id: "2", 
-        name: "MacBook Air M1 2020",
-        price: 650,
-        description: "13-inch MacBook Air in great condition. Includes charger and original box.",
-        category: "electronics",
-        image: "/placeholder.svg",
-        seller_id: "user2",
-        seller_name: "Mike K.",
-        location: "South Campus",
-        whatsapp_number: "+1234567891",
-        created_at: "2024-01-14T15:30:00Z",
-        status: "active"
-      },
-      {
-        id: "3",
-        name: "Desk Lamp - IKEA",
-        price: 25,
-        description: "White desk lamp, perfect for studying. Still in excellent working condition.",
-        category: "furniture",
-        image: "/placeholder.svg",
-        seller_id: "user3",
-        seller_name: "Emma L.",
-        location: "Block A",
-        whatsapp_number: "+1234567892",
-        created_at: "2024-01-12T09:15:00Z",
-        status: "active"
-      }
-    ];
-    setProducts(mockProducts);
-    setFilteredProducts(mockProducts);
-  }, []);
 
   useEffect(() => {
-    let filtered = products;
-
-    if (searchTerm) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter(product => product.category === selectedCategory);
-    }
-
-    if (selectedLocation !== "all") {
-      filtered = filtered.filter(product => product.location === selectedLocation);
-    }
-
-    setFilteredProducts(filtered);
-  }, [searchTerm, selectedCategory, selectedLocation, products]);
+    fetchProducts({
+      category: selectedCategory,
+      location: selectedLocation,
+      searchTerm: searchTerm
+    });
+  }, [searchTerm, selectedCategory, selectedLocation]);
 
   const categories = [
     { value: "all", label: "All Categories" },
@@ -102,7 +39,7 @@ export const Marketplace = () => {
   ];
 
   const handleLike = (productId: string) => {
-    // Implement like functionality with Supabase
+    // Implement like functionality with Supabase in future
     console.log("Like product:", productId);
   };
 
@@ -189,69 +126,75 @@ export const Marketplace = () => {
           {/* Results Count */}
           <div className="mb-6">
             <p className="text-muted-foreground">
-              {filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'items'} found
+              {loading ? 'Loading...' : `${products.length} ${products.length === 1 ? 'item' : 'items'} found`}
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredProducts.map((product) => (
-              <Card key={product.id} className="marketplace-card group hover:scale-105 transition-all">
-                <CardHeader className="p-4">
-                  <div className="relative">
-                    <img 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-full h-48 object-cover rounded-lg bg-muted"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 text-muted-foreground hover:text-red-500"
-                      onClick={() => handleLike(product.id)}
-                    >
-                      <Heart className="h-4 w-4" />
-                    </Button>
-                    <Badge className="absolute bottom-2 left-2 bg-primary/20 text-primary">
-                      {product.category}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-4 pt-0">
-                  <CardTitle className="text-lg mb-2 line-clamp-2">{product.name}</CardTitle>
-                  <CardDescription className="text-sm mb-3 line-clamp-2">
-                    {product.description}
-                  </CardDescription>
-                  
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold price-text">${product.price}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {product.status}
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((product) => (
+                <Card key={product.id} className="marketplace-card group hover:scale-105 transition-all">
+                  <CardHeader className="p-4">
+                    <div className="relative">
+                      <img 
+                        src={product.image || "/placeholder.svg"} 
+                        alt={product.name}
+                        className="w-full h-48 object-cover rounded-lg bg-muted"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute top-2 right-2 text-muted-foreground hover:text-red-500"
+                        onClick={() => handleLike(product.id)}
+                      >
+                        <Heart className="h-4 w-4" />
+                      </Button>
+                      <Badge className="absolute bottom-2 left-2 bg-primary/20 text-primary">
+                        {product.category}
                       </Badge>
                     </div>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <CardTitle className="text-lg mb-2 line-clamp-2">{product.name}</CardTitle>
+                    <CardDescription className="text-sm mb-3 line-clamp-2">
+                      {product.description}
+                    </CardDescription>
                     
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      {product.location}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold price-text">${product.price}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {product.status}
+                        </Badge>
+                      </div>
+                      
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        {product.location}
+                      </div>
+                      
+                      <div className="text-xs text-muted-foreground">
+                        by {product.seller_name} • {getTimeAgo(product.created_at)}
+                      </div>
                     </div>
-                    
-                    <div className="text-xs text-muted-foreground">
-                      by {product.seller_name} • {getTimeAgo(product.created_at)}
-                    </div>
-                  </div>
 
-                  <WhatsAppContact 
-                    phoneNumber={product.whatsapp_number}
-                    productName={product.name}
-                    className="w-full"
-                  />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    <WhatsAppContact 
+                      phoneNumber={product.whatsapp_number}
+                      productName={product.name}
+                      className="w-full"
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
-          {filteredProducts.length === 0 && (
+          {!loading && products.length === 0 && (
             <div className="text-center py-12">
               <h3 className="text-lg font-semibold mb-2">No items found</h3>
               <p className="text-muted-foreground mb-4">Try adjusting your search terms or filters</p>

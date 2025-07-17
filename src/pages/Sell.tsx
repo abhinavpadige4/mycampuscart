@@ -10,14 +10,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, ArrowLeft, DollarSign } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { CATEGORIES, LOCATIONS, CreateProductData } from "@/types/product";
-import { useAuth } from "@/hooks/useAuth";
+import { useProducts } from "@/hooks/useProducts";
 
 export const Sell = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { user } = useAuth();
+  const { createProduct } = useProducts();
   const [formData, setFormData] = useState<CreateProductData>({
     name: "",
     price: 0,
@@ -48,27 +46,10 @@ export const Sell = () => {
     setIsSubmitting(true);
 
     try {
-      // Here you would integrate with Supabase to save the product
-      console.log("Product data:", {
-        ...formData,
-        seller_id: user?.id,
-        seller_name: user?.firstName + " " + user?.lastName || user?.emailAddresses[0]?.emailAddress
-      });
-      
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      toast({
-        title: "Item Listed Successfully!",
-        description: `${formData.name} has been posted to the marketplace.`,
-      });
-      
+      await createProduct(formData);
       navigate('/dashboard');
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to list item. Please try again.",
-        variant: "destructive"
-      });
+      console.error('Error creating product:', error);
     } finally {
       setIsSubmitting(false);
     }
