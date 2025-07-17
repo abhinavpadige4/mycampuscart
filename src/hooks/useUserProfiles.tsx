@@ -30,7 +30,7 @@ export const useUserProfiles = () => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      setUsers(data || [])
+      setUsers((data || []) as UserProfile[])
     } catch (error) {
       console.error('Error fetching users:', error)
       toast({
@@ -66,7 +66,7 @@ export const useUserProfiles = () => {
         .single()
 
       if (error) throw error
-      return data
+      return data as UserProfile
     } catch (error) {
       console.error('Error creating/updating user profile:', error)
     }

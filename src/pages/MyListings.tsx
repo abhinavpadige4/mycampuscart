@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
@@ -25,7 +24,7 @@ import { Product } from "@/types/product";
 export const MyListings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { deleteProduct, updateProduct } = useProducts();
+  const { deleteProduct, updateProduct, fetchUserProducts } = useProducts();
   const [listings, setListings] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,9 +33,8 @@ export const MyListings = () => {
       if (!user?.id) return;
       
       try {
-        const { fetchUserProducts } = useProducts();
         const userProducts = await fetchUserProducts(user.id);
-        setListings(userProducts);
+        setListings(userProducts as Product[]);
       } catch (error) {
         console.error('Error fetching user listings:', error);
       } finally {

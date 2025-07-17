@@ -39,7 +39,7 @@ export const useProducts = () => {
       const { data, error } = await query
 
       if (error) throw error
-      setProducts(data || [])
+      setProducts((data || []) as Product[])
     } catch (error) {
       console.error('Error fetching products:', error)
       toast({
@@ -75,7 +75,7 @@ export const useProducts = () => {
         description: "Your item has been listed successfully.",
       })
 
-      return data
+      return data as Product
     } catch (error) {
       console.error('Error creating product:', error)
       toast({
@@ -103,7 +103,7 @@ export const useProducts = () => {
         description: "Product updated successfully.",
       })
 
-      return data
+      return data as Product
     } catch (error) {
       console.error('Error updating product:', error)
       toast({
@@ -152,7 +152,7 @@ export const useProducts = () => {
         .order('created_at', { ascending: false })
 
       if (error) throw error
-      return data || []
+      return (data || []) as Product[]
     } catch (error) {
       console.error('Error fetching user products:', error)
       toast({
