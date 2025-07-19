@@ -1,4 +1,3 @@
-
 import { useUser, useClerk } from "@clerk/clerk-react";
 
 export const useAuth = () => {
