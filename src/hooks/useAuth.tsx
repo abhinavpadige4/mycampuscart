@@ -6,6 +6,7 @@ export const useAuth = () => {
   
   const isAuthenticated = isLoaded && !!user;
   const isAdmin = user?.emailAddresses[0]?.emailAddress === "admin@campuscart.com" || 
+                  user?.emailAddresses[0]?.emailAddress === "abhinavpadige06@gmail.com" ||
                   user?.publicMetadata?.role === "admin";
   
   const userName = user?.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 

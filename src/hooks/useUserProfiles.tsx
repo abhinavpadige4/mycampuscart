@@ -58,6 +58,7 @@ export const useUserProfiles = () => {
         first_name: user.firstName || null,
         last_name: user.lastName || null,
         role: (user.emailAddresses[0]?.emailAddress === 'admin@campuscart.com' || 
+               user.emailAddresses[0]?.emailAddress === 'abhinavpadige06@gmail.com' ||
                user.publicMetadata?.role === 'admin') ? 'admin' as const : 'user' as const
       };
 
