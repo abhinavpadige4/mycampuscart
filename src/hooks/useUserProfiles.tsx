@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/hooks/useAuth'
+import { useUser } from '@clerk/clerk-react'
 import { useToast } from '@/hooks/use-toast'
 
 interface UserProfile {
@@ -18,7 +18,7 @@ interface UserProfile {
 export const useUserProfiles = () => {
   const [users, setUsers] = useState<UserProfile[]>([])
   const [loading, setLoading] = useState(false)
-  const { user } = useAuth()
+  const { user, isLoaded } = useUser()
   const { toast } = useToast()
 
   const fetchUsers = async () => {
@@ -83,10 +83,10 @@ export const useUserProfiles = () => {
   }
 
   useEffect(() => {
-    if (user) {
+    if (user && isLoaded) {
       createOrUpdateUserProfile()
     }
-  }, [user])
+  }, [user, isLoaded])
 
   return {
     users,
