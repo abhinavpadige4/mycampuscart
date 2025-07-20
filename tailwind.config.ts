@@ -62,7 +62,7 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// CampusCart marketplace colors
+				// MyCampusCart marketplace colors
 				'price': 'hsl(var(--price-color))',
 				'warning': 'hsl(var(--warning-color))',
 				'success': 'hsl(var(--success-color))'

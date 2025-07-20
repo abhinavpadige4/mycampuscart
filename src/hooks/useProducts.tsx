@@ -156,10 +156,11 @@ export const useProducts = () => {
   const fetchUserProducts = async (userId: string): Promise<Product[]> => {
     setLoading(true)
     try {
+      // Query using both seller_id (clerk ID) and user_id (UUID) to ensure compatibility
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('seller_id', userId)
+        .or(`seller_id.eq.${userId},user_id.eq.${userId}`)
         .order('created_at', { ascending: false })
 
       if (error) throw error

@@ -1,4 +1,4 @@
-# CampusCart - Student Marketplace
+# MyCampusCart - Student Marketplace
 
 A modern, secure marketplace designed specifically for students to buy and sell items on campus.
 

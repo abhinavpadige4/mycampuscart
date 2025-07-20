@@ -24,6 +24,7 @@ export const MyListings = () => {
     if (!user?.id) return;
     
     try {
+      // Use clerk user ID for fetching products
       const userProducts = await fetchUserProducts(user.id);
       setListings(userProducts);
     } catch (error) {
@@ -139,7 +140,7 @@ export const MyListings = () => {
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center justify-between">
                         <span className="text-2xl font-bold price-text">
-                          <DollarSign className="inline h-5 w-5" />{listing.price}
+                          ₹{listing.price}
                         </span>
                         <Badge variant="outline">{listing.category}</Badge>
                       </div>

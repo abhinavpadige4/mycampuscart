@@ -57,7 +57,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold price-text">${product.price}</span>
+            <span className="text-2xl font-bold price-text">₹{product.price}</span>
             <Badge variant="outline" className="text-xs">
               {product.status}
             </Badge>

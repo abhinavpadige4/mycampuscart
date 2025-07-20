@@ -5,7 +5,7 @@ export const useAuth = () => {
   const { signOut } = useClerk();
   
   const isAuthenticated = isLoaded && !!user;
-  const isAdmin = user?.emailAddresses[0]?.emailAddress === "admin@campuscart.com" || 
+  const isAdmin = user?.emailAddresses[0]?.emailAddress === "admin@mycampuscart.com" || 
                   user?.emailAddresses[0]?.emailAddress === "abhinavpadige06@gmail.com" ||
                   user?.publicMetadata?.role === "admin";
   

@@ -24,7 +24,7 @@ export const Navbar = ({ onLoginClick }: NavbarProps) => {
             <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center">
               <ShoppingCart className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold hero-text">CampusCart</span>
+            <span className="text-xl font-bold hero-text">MyCampusCart</span>
           </div>
           
           <div className="flex items-center space-x-4">

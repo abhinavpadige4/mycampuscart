@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { Footer } from "@/components/Footer";
 import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
@@ -17,9 +18,10 @@ const Index = () => {
 
   const handleGetStarted = () => {
     if (isAuthenticated) {
-      navigate('/dashboard');
+      navigate('/marketplace');
+    } else {
+      navigate('/sign-in');
     }
-    // If not authenticated, the sign-in button in Hero will handle it
   };
 
   if (!isLoaded) {
@@ -31,9 +33,12 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
-      <Hero onGetStarted={handleGetStarted} />
+      <main className="flex-1">
+        <Hero onGetStarted={handleGetStarted} />
+      </main>
+      <Footer />
     </div>
   );
 };

@@ -141,7 +141,7 @@ export const Admin = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-muted-foreground text-sm">Revenue</p>
-                    <p className="text-2xl font-bold price-text">${totalRevenue}</p>
+                    <p className="text-2xl font-bold price-text">₹{totalRevenue}</p>
                     <p className="text-sm text-success">Total volume</p>
                   </div>
                   <div className="w-12 h-12 rounded-full bg-gradient-primary flex items-center justify-center">
@@ -256,7 +256,7 @@ export const Admin = () => {
                               >
                                 {listing.status}
                               </Badge>
-                              <span className="text-sm price-text font-semibold">${listing.price}</span>
+                              <span className="text-sm price-text font-semibold">₹{listing.price}</span>
                             </div>
                             <p className="text-sm text-muted-foreground mb-1">by {listing.seller_name}</p>
                             <div className="flex gap-4 text-xs text-muted-foreground">
@@ -339,14 +339,14 @@ export const Admin = () => {
                     <div className="space-y-2">
                       <h4 className="font-semibold">Avg. Item Price</h4>
                       <div className="text-2xl font-bold price-text">
-                        ${products.length > 0 ? (products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(0) : 0}
+                        ₹{products.length > 0 ? (products.reduce((sum, p) => sum + p.price, 0) / products.length).toFixed(0) : 0}
                       </div>
                       <p className="text-sm text-muted-foreground">across all categories</p>
                     </div>
                     
                     <div className="space-y-2">
                       <h4 className="font-semibold">Total Revenue</h4>
-                      <div className="text-2xl font-bold price-text">${totalRevenue}</div>
+                      <div className="text-2xl font-bold price-text">₹{totalRevenue}</div>
                       <p className="text-sm text-muted-foreground">From completed sales</p>
                     </div>
                   </div>

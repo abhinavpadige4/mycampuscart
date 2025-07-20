@@ -13,7 +13,7 @@ export const ClerkAuth = () => {
             <div className="mx-auto w-16 h-16 rounded-full bg-gradient-primary flex items-center justify-center mb-4">
               <ShoppingCart className="h-8 w-8 text-primary-foreground" />
             </div>
-            <CardTitle className="text-2xl">Welcome to CampusCart</CardTitle>
+            <CardTitle className="text-2xl">Welcome to MyCampusCart</CardTitle>
             <CardDescription>
               Sign in to start buying and selling with your campus community
             </CardDescription>

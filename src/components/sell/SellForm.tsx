@@ -73,13 +73,13 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="price">Price (USD) *</Label>
+              <Label htmlFor="price">Price (₹) *</Label>
               <div className="relative">
                 <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="price"
                   type="number"
-                  placeholder="25.00"
+                  placeholder="250"
                   className="pl-10"
                   value={formData.price || ""}
                   onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
