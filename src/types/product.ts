@@ -35,14 +35,10 @@ export const CATEGORIES = [
 ] as const;
 
 export const LOCATIONS = [
-  "Block A",
-  "Block B", 
-  "Block C",
-  "North Campus",
-  "South Campus",
-  "East Campus",
-  "West Campus",
-  "Library Area",
-  "Sports Complex",
-  "Cafeteria"
+  // Hyderabad
+  "Alwal", "Amberpet", "Ameerpet", "Attapur", "Bacharam", "Bachupally", "Barkatpura", "Boduppal", "Chanda Nagar", "Chikkadpally", "Dilsukhnagar", "ECIL", "Gachibowli", "Ghatkesar", "Habsiguda", "Hasthinapuram", "Hayath Nagar", "Himayathnagar", "Ibrahimpatnam", "Jeedimetla", "Kompally", "Kondapur", "Koti", "Kukatpally", "Lingampally", "Madhapur", "Malakpet", "Manikonda", "Maradpally", "Medchal", "Mehdipatnam", "Miyapur", "Musheerabad", "Nallakunta", "Nampally", "Narayanguda", "Narsingi", "Nizampet", "Padmarao Nagar", "Pochampally", "Rajendra Nagar", "Ramachandra Puram", "SR Nagar", "Saroornagar", "Secunderabad", "Shankarpally", "Tarnaka", "Turkayamzal", "Uppal", "Vidya Nagar",
+  // Pune  
+  "Aundh", "Balewadi", "Baner", "Bund Garden", "Dhankawadi", "Dhankawadi-Bibewadi", "Hadapsar", "Hinjewadi", "Karve Nagar", "Koregaon Park", "Kothrud", "Magarpatta City", "Pimple Saudagar", "Pune", "Shivajinagar", "Viman Nagar", "Wakad",
+  // Bangalore
+  "BTM Layout", "Banashankari", "Bannerghatta Road", "Basavanagudi", "Bellandur", "Electronic City", "HSR Layout", "Hebbal", "Indiranagar", "J P Nagar", "Jayanagar", "K R Puram", "Koramangala", "Mahalakshmi Layout", "Malleshwaram", "Marathahalli", "Nagarbhavi", "Rajaji Nagar", "Sadashivanagar", "Sarjapur Road", "Ulsoor", "Vijayanagar", "Whitefield", "Yelahanka"
 ] as const;

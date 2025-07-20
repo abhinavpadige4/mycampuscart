@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, DollarSign } from "lucide-react";
+import { Upload, IndianRupee } from "lucide-react";
 import { CreateProductData } from "@/types/product";
 
 interface SellFormProps {
@@ -51,7 +51,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
     <Card className="marketplace-card">
       <CardHeader>
         <CardTitle className="flex items-center">
-          <DollarSign className="h-5 w-5 mr-2 text-primary" />
+          <IndianRupee className="h-5 w-5 mr-2 text-primary" />
           Item Details
         </CardTitle>
         <CardDescription>
@@ -75,11 +75,11 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
             <div className="space-y-2">
               <Label htmlFor="price">Price (₹) *</Label>
               <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <IndianRupee className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="price"
                   type="number"
-                  placeholder="250"
+                  placeholder="2500"
                   className="pl-10"
                   value={formData.price || ""}
                   onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
@@ -124,7 +124,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
               <Label htmlFor="whatsapp">WhatsApp Number *</Label>
               <Input
                 id="whatsapp"
-                placeholder="e.g., +1234567890 (include country code)"
+                placeholder="+91XXXXXXXXX"
                 value={formData.whatsapp_number}
                 onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
                 required
