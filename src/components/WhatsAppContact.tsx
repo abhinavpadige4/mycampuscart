@@ -6,12 +6,16 @@ interface WhatsAppContactProps {
   phoneNumber: string;
   productName: string;
   productImage?: string;
+  productNumber?: string;
   className?: string;
 }
 
-export const WhatsAppContact = ({ phoneNumber, productName, productImage, className }: WhatsAppContactProps) => {
+export const WhatsAppContact = ({ phoneNumber, productName, productImage, productNumber, className }: WhatsAppContactProps) => {
   const handleWhatsAppClick = () => {
     let message = `Hi! I'm interested in your product: ${productName}`;
+    if (productNumber) {
+      message += `\nProduct ID: ${productNumber}`;
+    }
     if (productImage) {
       message += `\n\nProduct Image: ${productImage}`;
     }

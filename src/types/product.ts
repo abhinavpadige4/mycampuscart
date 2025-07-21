@@ -11,7 +11,10 @@ export interface Product {
   seller_id: string;
   seller_name: string;
   created_at: string;
-  status: 'active' | 'sold';
+  updated_at?: string;
+  user_id?: string;
+  product_number?: string;
+  status: 'active' | 'sold' | 'inactive';
 }
 
 export interface CreateProductData {

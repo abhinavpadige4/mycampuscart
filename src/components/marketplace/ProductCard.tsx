@@ -70,6 +70,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           
           <div className="text-xs text-muted-foreground">
             by {product.seller_name} • {getTimeAgo(product.created_at)}
+            {product.product_number && ` • ID: ${product.product_number}`}
           </div>
         </div>
 
@@ -77,6 +78,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           phoneNumber={product.whatsapp_number}
           productName={product.name}
           productImage={product.image}
+          productNumber={product.product_number}
           className="w-full"
         />
       </CardContent>

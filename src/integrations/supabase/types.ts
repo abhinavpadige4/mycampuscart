@@ -24,10 +24,12 @@ export type Database = {
           location: string
           name: string
           price: number
+          product_number: string | null
           seller_id: string
           seller_name: string
           status: string
           updated_at: string
+          user_id: string | null
           whatsapp_number: string
         }
         Insert: {
@@ -39,10 +41,12 @@ export type Database = {
           location: string
           name: string
           price: number
+          product_number?: string | null
           seller_id: string
           seller_name: string
           status?: string
           updated_at?: string
+          user_id?: string | null
           whatsapp_number: string
         }
         Update: {
@@ -54,10 +58,12 @@ export type Database = {
           location?: string
           name?: string
           price?: number
+          product_number?: string | null
           seller_id?: string
           seller_name?: string
           status?: string
           updated_at?: string
+          user_id?: string | null
           whatsapp_number?: string
         }
         Relationships: []
@@ -100,7 +106,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_product_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
