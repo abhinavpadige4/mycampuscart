@@ -76,6 +76,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <WhatsAppContact 
           phoneNumber={product.whatsapp_number}
           productName={product.name}
+          productImage={product.image}
           className="w-full"
         />
       </CardContent>

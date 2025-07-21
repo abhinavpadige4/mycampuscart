@@ -5,12 +5,17 @@ import { MessageCircle } from "lucide-react";
 interface WhatsAppContactProps {
   phoneNumber: string;
   productName: string;
+  productImage?: string;
   className?: string;
 }
 
-export const WhatsAppContact = ({ phoneNumber, productName, className }: WhatsAppContactProps) => {
+export const WhatsAppContact = ({ phoneNumber, productName, productImage, className }: WhatsAppContactProps) => {
   const handleWhatsAppClick = () => {
-    const message = `Hi! I'm interested in your product: ${productName}`;
+    let message = `Hi! I'm interested in your product: ${productName}`;
+    if (productImage) {
+      message += `\n\nProduct Image: ${productImage}`;
+    }
+    message += `\n\nPlease let me know if it's still available!`;
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');

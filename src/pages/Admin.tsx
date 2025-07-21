@@ -16,7 +16,9 @@ import {
   TrendingUp, 
   Search, 
   Trash2,
-  BarChart3
+  BarChart3,
+  UserX,
+  Ban
 } from "lucide-react";
 import {
   AlertDialog,
@@ -35,7 +37,7 @@ import { useUserProfiles } from "@/hooks/useUserProfiles";
 export const Admin = () => {
   const navigate = useNavigate();
   const { products, loading: productsLoading, fetchProducts, deleteProduct } = useProducts();
-  const { users, loading: usersLoading, fetchUsers } = useUserProfiles();
+  const { users, loading: usersLoading, fetchUsers, blockUser, deleteUser } = useUserProfiles();
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
@@ -202,12 +204,77 @@ export const Admin = () => {
                                   Admin
                                 </Badge>
                               )}
+                              {user.role === 'blocked' && (
+                                <Badge variant="destructive">
+                                  Blocked
+                                </Badge>
+                              )}
                             </div>
                             <p className="text-sm text-muted-foreground mb-1">{user.email}</p>
                             <div className="text-xs text-muted-foreground">
                               Joined: {new Date(user.created_at).toLocaleDateString()}
                             </div>
                           </div>
+                          {user.role !== 'admin' && (
+                            <div className="flex gap-2">
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="outline" size="sm">
+                                    <Ban className="h-4 w-4 mr-2" />
+                                    {user.role === 'blocked' ? 'Unblock' : 'Block'}
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      {user.role === 'blocked' ? 'Unblock User' : 'Block User'}
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      {user.role === 'blocked' 
+                                        ? `Are you sure you want to unblock ${user.first_name || user.email}?`
+                                        : `Are you sure you want to block ${user.first_name || user.email}? They won't be able to access the platform.`
+                                      }
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => blockUser(user.id)}
+                                      className={user.role === 'blocked' ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-destructive text-destructive-foreground hover:bg-destructive/90"}
+                                    >
+                                      {user.role === 'blocked' ? 'Unblock' : 'Block'}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" size="sm">
+                                    <UserX className="h-4 w-4 mr-2" />
+                                    Remove
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Remove User</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to permanently remove {user.first_name || user.email}? This action cannot be undone and will delete all their data.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction 
+                                      onClick={() => deleteUser(user.id)}
+                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                      Remove
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

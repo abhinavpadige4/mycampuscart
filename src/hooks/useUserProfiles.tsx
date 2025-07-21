@@ -9,7 +9,7 @@ interface UserProfile {
   email: string;
   first_name: string | null;
   last_name: string | null;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'blocked';
   created_at: string;
   updated_at: string;
 }
@@ -32,7 +32,7 @@ export const useUserProfiles = () => {
       
       const typedUsers: UserProfile[] = (data || []).map(item => ({
         ...item,
-        role: item.role as 'user' | 'admin'
+        role: item.role as 'user' | 'admin' | 'blocked'
       }));
       
       setUsers(typedUsers);
@@ -45,6 +45,54 @@ export const useUserProfiles = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const blockUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ role: 'blocked' })
+        .eq('id', userId);
+
+      if (error) throw error;
+      
+      await fetchUsers(); // Refresh users list
+      toast({
+        title: "Success",
+        description: "User has been blocked",
+      });
+    } catch (error) {
+      console.error('Error blocking user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to block user",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const deleteUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('user_profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) throw error;
+      
+      await fetchUsers(); // Refresh users list
+      toast({
+        title: "Success",
+        description: "User has been removed",
+      });
+    } catch (error) {
+      console.error('Error deleting user:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove user",
+        variant: "destructive"
+      });
     }
   };
 
@@ -75,7 +123,7 @@ export const useUserProfiles = () => {
       
       return {
         ...data,
-        role: data.role as 'user' | 'admin'
+        role: data.role as 'user' | 'admin' | 'blocked'
       } as UserProfile;
     } catch (error) {
       console.error('Error creating/updating user profile:', error);
@@ -92,6 +140,8 @@ export const useUserProfiles = () => {
     users,
     loading,
     fetchUsers,
-    createOrUpdateUserProfile
+    createOrUpdateUserProfile,
+    blockUser,
+    deleteUser
   };
 };
