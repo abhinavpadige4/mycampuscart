@@ -110,6 +110,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
+      set_product_number: {
+        Args: { product_id: number }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
