@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { Product, CreateProductData } from '@/types/product'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/use-toast'
+import { createProductSecurely } from '@/lib/auth-bridge'
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([])
@@ -65,35 +66,35 @@ export const useProducts = () => {
         throw new Error('User not authenticated')
       }
 
-      const { data, error } = await supabase
-        .from('products')
-        .insert({
-          ...productData,
-          seller_id: user.id,
-          seller_name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 
-                      user.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User',
-          user_id: user.id,
-          status: 'active'
-        })
-        .select()
-        .single()
+      // Use secure auth bridge for product creation
+      const productWithMetadata = {
+        ...productData,
+        seller_name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 
+                    user.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User',
+        status: 'active'
+      };
 
-      if (error) throw error
+      const userInfo = {
+        email: user.emailAddresses[0]?.emailAddress,
+        first_name: user.firstName,
+        last_name: user.lastName
+      };
 
+      const newProduct = await createProductSecurely(user.id, productWithMetadata, userInfo);
+      
+      setProducts(current => [newProduct, ...current])
+      
       toast({
         title: "Success!",
-        description: "Your item has been listed successfully.",
+        description: "Your product has been listed successfully.",
       })
-
-      return {
-        ...data,
-        status: data.status as 'active' | 'sold'
-      } as Product
+      
+      return newProduct
     } catch (error) {
       console.error('Error creating product:', error)
       toast({
         title: "Error",
-        description: "Failed to create listing. Please try again.",
+        description: "Failed to create product. Please try again.",
         variant: "destructive"
       })
       throw error

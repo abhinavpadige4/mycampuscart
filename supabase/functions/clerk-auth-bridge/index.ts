@@ -36,48 +36,78 @@ serve(async (req) => {
 
     switch (action) {
       case 'getUserRole':
-        const { data: profile, error: profileError } = await supabase
+        // First ensure user profile exists
+        const { data: existingProfile, error: profileFetchError } = await supabase
           .from('user_profiles')
           .select('role')
           .eq('clerk_user_id', clerkUserId)
           .single();
 
-        if (profileError) {
-          return new Response(
-            JSON.stringify({ role: 'user' }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
+        if (profileFetchError && profileFetchError.code !== 'PGRST116') {
+          console.error('Error fetching profile:', profileFetchError);
+        }
+
+        // If profile doesn't exist, create it
+        if (!existingProfile) {
+          const { error: createError } = await supabase
+            .from('user_profiles')
+            .insert({
+              clerk_user_id: clerkUserId,
+              email: data?.email || `${clerkUserId}@temp.com`,
+              first_name: data?.first_name || null,
+              last_name: data?.last_name || null,
+              role: 'user'
+            });
+
+          if (createError) {
+            console.error('Error creating profile:', createError);
+          }
         }
 
         return new Response(
-          JSON.stringify({ role: profile.role }),
+          JSON.stringify({ role: existingProfile?.role || 'user' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
       case 'createProduct':
-        // Generate a UUID for the user based on Clerk ID
-        const userUuid = await crypto.subtle.digest(
-          'SHA-256',
-          new TextEncoder().encode(clerkUserId)
-        );
-        const userUuidHex = Array.from(new Uint8Array(userUuid))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('')
-          .slice(0, 32);
-        
-        const formattedUuid = [
-          userUuidHex.slice(0, 8),
-          userUuidHex.slice(8, 12),
-          userUuidHex.slice(12, 16),
-          userUuidHex.slice(16, 20),
-          userUuidHex.slice(20, 32)
-        ].join('-');
+        // First ensure user profile exists
+        let userProfileId;
+        const { data: userProfile, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('clerk_user_id', clerkUserId)
+          .single();
+
+        if (profileError) {
+          // Create user profile if it doesn't exist
+          const { data: newProfile, error: createProfileError } = await supabase
+            .from('user_profiles')
+            .insert({
+              clerk_user_id: clerkUserId,
+              email: data?.email || `${clerkUserId}@temp.com`,
+              first_name: data?.first_name || null,
+              last_name: data?.last_name || null,
+              role: 'user'
+            })
+            .select('id')
+            .single();
+
+          if (createProfileError) {
+            return new Response(
+              JSON.stringify({ error: 'Failed to create user profile' }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          userProfileId = newProfile.id;
+        } else {
+          userProfileId = userProfile.id;
+        }
 
         const { data: product, error: productError } = await supabase
           .from('products')
           .insert({
             ...data,
-            user_id: formattedUuid,
+            user_id: userProfileId,
             seller_id: clerkUserId
           })
           .select()
