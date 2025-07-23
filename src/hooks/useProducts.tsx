@@ -60,10 +60,8 @@ export const useProducts = () => {
 
   const createProduct = async (productData: CreateProductData): Promise<Product> => {
     try {
-      // Get current authenticated user from Supabase
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
-      
-      if (authError || !authUser) {
+      // Check if user is authenticated via Clerk
+      if (!user) {
         throw new Error('User not authenticated')
       }
 
@@ -71,10 +69,10 @@ export const useProducts = () => {
         .from('products')
         .insert({
           ...productData,
-          seller_id: authUser.id,
-          seller_name: authUser.user_metadata?.full_name || 
-                      authUser.email?.split('@')[0] || 'User',
-          user_id: authUser.id,
+          seller_id: user.id,
+          seller_name: user.firstName ? `${user.firstName} ${user.lastName || ''}`.trim() : 
+                      user.emailAddresses[0]?.emailAddress?.split('@')[0] || 'User',
+          user_id: user.id,
           status: 'active'
         })
         .select()
