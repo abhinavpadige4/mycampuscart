@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Upload, IndianRupee } from "lucide-react";
+import { Upload, IndianRupee, AlertCircle } from "lucide-react";
 import { CreateProductData } from "@/types/product";
+import { productSchema, sanitizeInput, validatePhoneNumber, validateImageUrl } from "@/lib/validation";
+import { useToast } from "@/hooks/use-toast";
 
 interface SellFormProps {
   categories: readonly string[];
@@ -28,23 +30,118 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
     image: ""
   });
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { toast } = useToast();
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Enhanced file validation
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+      
+      if (!allowedTypes.includes(file.type)) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a JPEG, PNG, or WebP image",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      if (file.size > maxSize) {
+        toast({
+          title: "File too large",
+          description: "Please upload an image smaller than 10MB",
+          variant: "destructive"
+        });
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         const result = reader.result as string;
         setImagePreview(result);
         setFormData({ ...formData, image: result });
+        setErrors({ ...errors, image: "" });
       };
       reader.readAsDataURL(file);
     }
   };
 
+  const validateField = (field: string, value: any) => {
+    const newErrors = { ...errors };
+    
+    try {
+      switch (field) {
+        case 'name':
+          productSchema.shape.name.parse(sanitizeInput(value));
+          delete newErrors.name;
+          break;
+        case 'price':
+          productSchema.shape.price.parse(Number(value));
+          delete newErrors.price;
+          break;
+        case 'description':
+          productSchema.shape.description.parse(sanitizeInput(value));
+          delete newErrors.description;
+          break;
+        case 'whatsapp_number':
+          if (!validatePhoneNumber(value)) {
+            newErrors.whatsapp_number = "Invalid phone number format";
+          } else {
+            delete newErrors.whatsapp_number;
+          }
+          break;
+        case 'image':
+          if (value && !validateImageUrl(value)) {
+            newErrors.image = "Invalid or unsafe image URL";
+          } else {
+            delete newErrors.image;
+          }
+          break;
+      }
+    } catch (error: any) {
+      newErrors[field] = error.errors?.[0]?.message || "Invalid input";
+    }
+    
+    setErrors(newErrors);
+  };
+
+  const handleInputChange = (field: string, value: any) => {
+    const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
+    setFormData({ ...formData, [field]: sanitizedValue });
+    validateField(field, sanitizedValue);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Comprehensive validation before submission
+    try {
+      const validatedData = productSchema.parse({
+        ...formData,
+        name: sanitizeInput(formData.name),
+        description: sanitizeInput(formData.description)
+      }) as CreateProductData;
+      
+      // Additional security checks
+      if (formData.whatsapp_number && !validatePhoneNumber(formData.whatsapp_number)) {
+        throw new Error("Invalid WhatsApp number");
+      }
+      
+      if (formData.image && !validateImageUrl(formData.image)) {
+        throw new Error("Invalid or unsafe image URL");
+      }
+      
+      onSubmit(validatedData);
+    } catch (error: any) {
+      toast({
+        title: "Validation Error",
+        description: error.errors?.[0]?.message || error.message || "Please check your input",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -67,9 +164,16 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                 id="name"
                 placeholder="e.g., Calculus Textbook - 3rd Edition"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => handleInputChange('name', e.target.value)}
                 required
+                className={errors.name ? "border-destructive" : ""}
               />
+              {errors.name && (
+                <p className="text-sm text-destructive flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors.name}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -80,13 +184,19 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                   id="price"
                   type="number"
                   placeholder="2500"
-                  className="pl-10"
+                  className={`pl-10 ${errors.price ? "border-destructive" : ""}`}
                   value={formData.price || ""}
-                  onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                  onChange={(e) => handleInputChange('price', e.target.value)}
                   required
                 />
               </div>
-            </div>
+               {errors.price && (
+                 <p className="text-sm text-destructive flex items-center">
+                   <AlertCircle className="h-4 w-4 mr-1" />
+                   {errors.price}
+                 </p>
+               )}
+             </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
@@ -126,9 +236,16 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                 id="whatsapp"
                 placeholder="+91XXXXXXXXX"
                 value={formData.whatsapp_number}
-                onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
+                onChange={(e) => handleInputChange('whatsapp_number', e.target.value)}
+                className={errors.whatsapp_number ? "border-destructive" : ""}
                 required
               />
+              {errors.whatsapp_number && (
+                <p className="text-sm text-destructive flex items-center">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors.whatsapp_number}
+                </p>
+              )}
             </div>
           </div>
 
@@ -138,10 +255,17 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
               id="description"
               placeholder="Describe your item in detail..."
               value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              onChange={(e) => handleInputChange('description', e.target.value)}
+              className={errors.description ? "border-destructive" : ""}
               rows={4}
               required
             />
+            {errors.description && (
+              <p className="text-sm text-destructive flex items-center">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.description}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

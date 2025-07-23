@@ -100,14 +100,13 @@ export const useUserProfiles = () => {
     if (!user) return;
 
     try {
+      // Remove hardcoded admin logic - all new users start as 'user' role
       const profileData = {
         clerk_user_id: user.id,
         email: user.emailAddresses[0]?.emailAddress || '',
         first_name: user.firstName || null,
         last_name: user.lastName || null,
-        role: (user.emailAddresses[0]?.emailAddress === 'admin@mycampuscart.com' || 
-               user.emailAddresses[0]?.emailAddress === 'abhinavpadige06@gmail.com' ||
-               user.publicMetadata?.role === 'admin') ? 'admin' as const : 'user' as const
+        role: 'user' as const // Always default to user role for security
       };
 
       const { data, error } = await supabase

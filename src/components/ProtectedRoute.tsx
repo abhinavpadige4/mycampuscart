@@ -10,9 +10,9 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
-  const { isLoaded, isAuthenticated, isAdmin } = useAuth();
+  const { isLoaded, isAuthenticated, isAdmin, isBlocked, roleLoading } = useAuth();
 
-  if (!isLoaded) {
+  if (!isLoaded || roleLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -22,6 +22,22 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
 
   if (!isAuthenticated) {
     return <ClerkAuth />;
+  }
+
+  if (isBlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="marketplace-card max-w-md w-full">
+          <CardHeader className="text-center">
+            <Shield className="h-12 w-12 mx-auto text-destructive mb-4" />
+            <CardTitle className="text-2xl">Account Suspended</CardTitle>
+            <CardDescription>
+              Your account has been suspended. Please contact support for assistance.
+            </CardDescription>
+          </CardHeader>
+        </Card>
+      </div>
+    );
   }
 
   if (requireAdmin && !isAdmin) {
