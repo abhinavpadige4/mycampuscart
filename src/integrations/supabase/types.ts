@@ -66,7 +66,15 @@ export type Database = {
           user_id?: string | null
           whatsapp_number?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_profiles: {
         Row: {
@@ -76,7 +84,7 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
-          role: string
+          role: Database["public"]["Enums"]["user_role"]
           updated_at: string
         }
         Insert: {
@@ -86,7 +94,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
-          role?: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
         Update: {
@@ -96,7 +104,7 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
-          role?: string
+          role?: Database["public"]["Enums"]["user_role"]
           updated_at?: string
         }
         Relationships: []
@@ -128,7 +136,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "user" | "admin" | "blocked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -255,6 +263,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      user_role: ["user", "admin", "blocked"],
+    },
   },
 } as const
