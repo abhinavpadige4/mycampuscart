@@ -17,95 +17,81 @@ export type Database = {
       products: {
         Row: {
           category: string
-          created_at: string
+          condition: string
+          created_at: string | null
           description: string
           id: string
-          image: string | null
+          images: string[] | null
           location: string
-          name: string
           price: number
-          product_number: string | null
-          seller_id: string
-          seller_name: string
-          status: string
-          updated_at: string
+          status: string | null
+          title: string
+          updated_at: string | null
           user_id: string
-          whatsapp_number: string
+          views_count: number | null
+          whatsapp_number: string | null
         }
         Insert: {
           category: string
-          created_at?: string
+          condition: string
+          created_at?: string | null
           description: string
           id?: string
-          image?: string | null
+          images?: string[] | null
           location: string
-          name: string
           price: number
-          product_number?: string | null
-          seller_id: string
-          seller_name: string
-          status?: string
-          updated_at?: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
           user_id: string
-          whatsapp_number: string
+          views_count?: number | null
+          whatsapp_number?: string | null
         }
         Update: {
           category?: string
-          created_at?: string
+          condition?: string
+          created_at?: string | null
           description?: string
           id?: string
-          image?: string | null
+          images?: string[] | null
           location?: string
-          name?: string
           price?: number
-          product_number?: string | null
-          seller_id?: string
-          seller_name?: string
-          status?: string
-          updated_at?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
           user_id?: string
-          whatsapp_number?: string
+          views_count?: number | null
+          whatsapp_number?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "products_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      user_profiles: {
+      profiles: {
         Row: {
-          clerk_user_id: string
-          created_at: string
+          avatar_url: string | null
+          created_at: string | null
           email: string
-          first_name: string | null
+          full_name: string | null
           id: string
-          last_name: string | null
-          role: Database["public"]["Enums"]["user_role"]
-          updated_at: string
+          role: string | null
+          updated_at: string | null
         }
         Insert: {
-          clerk_user_id: string
-          created_at?: string
+          avatar_url?: string | null
+          created_at?: string | null
           email: string
-          first_name?: string | null
-          id?: string
-          last_name?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string
+          full_name?: string | null
+          id: string
+          role?: string | null
+          updated_at?: string | null
         }
         Update: {
-          clerk_user_id?: string
-          created_at?: string
+          avatar_url?: string | null
+          created_at?: string | null
           email?: string
-          first_name?: string | null
+          full_name?: string | null
           id?: string
-          last_name?: string | null
-          role?: Database["public"]["Enums"]["user_role"]
-          updated_at?: string
+          role?: string | null
+          updated_at?: string | null
         }
         Relationships: []
       }
