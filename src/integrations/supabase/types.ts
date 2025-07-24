@@ -29,7 +29,7 @@ export type Database = {
           seller_name: string
           status: string
           updated_at: string
-          user_id: string | null
+          user_id: string
           whatsapp_number: string
         }
         Insert: {
@@ -46,7 +46,7 @@ export type Database = {
           seller_name: string
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
           whatsapp_number: string
         }
         Update: {
@@ -63,7 +63,7 @@ export type Database = {
           seller_name?: string
           status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
           whatsapp_number?: string
         }
         Relationships: [
