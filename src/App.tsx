@@ -8,6 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { Suspense, lazy } from "react";
+import { AuthForm } from "@/components/AuthForm";
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -16,7 +17,6 @@ const Sell = lazy(() => import("./pages/Sell").then(module => ({ default: module
 const Marketplace = lazy(() => import("./pages/Marketplace").then(module => ({ default: module.Marketplace })));
 const MyListings = lazy(() => import("./pages/MyListings").then(module => ({ default: module.MyListings })));
 const Admin = lazy(() => import("./pages/Admin").then(module => ({ default: module.Admin })));
-const SignInPage = lazy(() => import("./pages/SignIn"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -44,12 +44,12 @@ const App = () => (
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<AuthForm />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sell" element={<Sell />} />
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/my-listings" element={<MyListings />} />
               <Route path="/admin" element={<Admin />} />
-              <Route path="/sign-in" element={<SignInPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

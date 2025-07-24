@@ -1,8 +1,8 @@
 
 import { useAuth } from "@/hooks/useAuth";
-import { ClerkAuth } from "./ClerkAuth";
+import { AuthForm } from "./AuthForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Shield } from "lucide-react";
+import { Shield, Loader2 } from "lucide-react";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,21 +10,21 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
-  const { isLoaded, isAuthenticated, isAdmin, isBlocked, roleLoading } = useAuth();
+  const { loading, isAuthenticated, isAdmin, profile } = useAuth();
 
-  if (!isLoaded || roleLoading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return <ClerkAuth />;
+    return <AuthForm />;
   }
 
-  if (isBlocked) {
+  if (profile?.role === 'blocked') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="marketplace-card max-w-md w-full">
