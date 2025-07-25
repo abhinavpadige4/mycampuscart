@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
@@ -40,7 +40,6 @@ const App = () => (
         <PerformanceMonitor />
         <Toaster />
         <Sonner />
-        <BrowserRouter>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
@@ -53,7 +52,6 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   </ErrorBoundary>
