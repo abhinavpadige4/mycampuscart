@@ -32,12 +32,17 @@ export const validatePhoneNumber = (phone: string): boolean => {
 
 export const validateImageUrl = (url: string): boolean => {
   try {
+    // Allow data URLs for images (base64 encoded images from file uploads)
+    if (url.startsWith('data:image/')) {
+      return true;
+    }
+    
     const parsedUrl = new URL(url);
     const allowedProtocols = ['http:', 'https:'];
     const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
     const dangerousPatterns = [
       'javascript:', 'data:text/html', 'data:application', 'vbscript:',
-      'file:', 'ftp:', 'blob:', 'about:'
+      'file:', 'ftp:', 'about:'
     ];
     
     // Check protocol
@@ -54,13 +59,9 @@ export const validateImageUrl = (url: string): boolean => {
     const pathname = parsedUrl.pathname.toLowerCase();
     const hasImageExtension = allowedImageExtensions.some(ext => pathname.endsWith(ext));
     
-    // Allow data URLs only for images
-    if (url.startsWith('data:')) {
-      return url.startsWith('data:image/');
-    }
-    
     return hasImageExtension || pathname.includes('/image') || pathname.includes('/photo');
   } catch {
-    return false;
+    // If URL parsing fails, it might be a data URL that doesn't parse as URL
+    return url.startsWith('data:image/');
   }
 };
