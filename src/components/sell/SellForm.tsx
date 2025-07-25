@@ -25,7 +25,6 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
     price: 0,
     description: "",
     category: "",
-    condition: "",
     whatsapp_number: "",
     location: "",
     images: []
@@ -215,21 +214,6 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="condition">Condition *</Label>
-              <Select onValueChange={(value) => setFormData({ ...formData, condition: value })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select condition" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="new">New</SelectItem>
-                  <SelectItem value="like new">Like New</SelectItem>
-                  <SelectItem value="good">Good</SelectItem>
-                  <SelectItem value="fair">Fair</SelectItem>
-                  <SelectItem value="poor">Poor</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
 
             <div className="space-y-2">
               <Label htmlFor="location">Location *</Label>
@@ -318,6 +302,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                       id="image"
                       type="file"
                       accept="image/*"
+                      capture="environment"
                       onChange={handleImageChange}
                       className="hidden"
                     />

@@ -23,7 +23,6 @@ export interface CreateProductData {
   description: string;
   price: number;
   category: string;
-  condition: string;
   location: string;
   images?: string[];
   whatsapp_number?: string;
