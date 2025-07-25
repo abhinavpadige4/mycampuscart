@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
   id: string;
+  clerk_user_id: string;
   email: string;
   first_name?: string;
   last_name?: string;
@@ -66,6 +67,7 @@ export const useAuth = () => {
     userRole,
     profile: user ? {
       id: user.id,
+      clerk_user_id: user.id,
       email: user.emailAddresses[0]?.emailAddress || '',
       first_name: user.firstName,
       last_name: user.lastName,

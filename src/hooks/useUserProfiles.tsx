@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
-// Since we don't have user_profiles table in the current schema,
-// we'll create a simple hook that manages Clerk users
+import { supabase } from "@/integrations/supabase/client";
+
 interface UserProfile {
   id: string;
   clerk_user_id: string;
@@ -19,8 +19,16 @@ export const useUserProfiles = () => {
 
   const fetchProfiles = async () => {
     try {
-      // Since we don't have user_profiles table, we'll return empty for now
-      setProfiles([]);
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching profiles:', error);
+      } else {
+        setProfiles(data || []);
+      }
     } catch (error) {
       console.error('Error fetching profiles:', error);
     } finally {
@@ -30,8 +38,16 @@ export const useUserProfiles = () => {
 
   const updateUserRole = async (userId: string, role: string) => {
     try {
-      // This would update the user role in the database
-      // For now, we'll just return success
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ role })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error updating user role:', error);
+        return { success: false, error };
+      }
+
       await fetchProfiles();
       return { success: true };
     } catch (error) {
@@ -46,9 +62,20 @@ export const useUserProfiles = () => {
 
   const deleteUser = async (userId: string) => {
     try {
-      // This would delete the user
+      const { error } = await supabase
+        .from('user_profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) {
+        console.error('Error deleting user:', error);
+        return { success: false, error };
+      }
+
+      await fetchProfiles();
       return { success: true };
     } catch (error) {
+      console.error('Error deleting user:', error);
       return { success: false, error };
     }
   };

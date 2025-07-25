@@ -12,18 +12,54 @@ export const productSchema = z.object({
 });
 
 export const sanitizeInput = (input: string): string => {
-  return input.trim().replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+  // More comprehensive XSS protection
+  return input
+    .trim()
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:text\/html/gi, '')
+    .replace(/vbscript:/gi, '');
 };
 
 export const validatePhoneNumber = (phone: string): boolean => {
-  const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
+  // More strict phone validation - must start with + and have 7-15 digits
+  const phoneRegex = /^\+[1-9]\d{6,14}$/;
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  return phoneRegex.test(cleanPhone) && cleanPhone.length >= 8 && cleanPhone.length <= 16;
 };
 
 export const validateImageUrl = (url: string): boolean => {
   try {
-    new URL(url);
-    return !url.toLowerCase().includes('javascript:') && !url.toLowerCase().includes('data:text/html');
+    const parsedUrl = new URL(url);
+    const allowedProtocols = ['http:', 'https:'];
+    const allowedImageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const dangerousPatterns = [
+      'javascript:', 'data:text/html', 'data:application', 'vbscript:',
+      'file:', 'ftp:', 'blob:', 'about:'
+    ];
+    
+    // Check protocol
+    if (!allowedProtocols.includes(parsedUrl.protocol)) {
+      return false;
+    }
+    
+    // Check for dangerous patterns
+    if (dangerousPatterns.some(pattern => url.toLowerCase().includes(pattern))) {
+      return false;
+    }
+    
+    // Check file extension for basic image validation
+    const pathname = parsedUrl.pathname.toLowerCase();
+    const hasImageExtension = allowedImageExtensions.some(ext => pathname.endsWith(ext));
+    
+    // Allow data URLs only for images
+    if (url.startsWith('data:')) {
+      return url.startsWith('data:image/');
+    }
+    
+    return hasImageExtension || pathname.includes('/image') || pathname.includes('/photo');
   } catch {
     return false;
   }
