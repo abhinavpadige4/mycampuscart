@@ -107,8 +107,7 @@ serve(async (req) => {
           .from('products')
           .insert({
             ...data,
-            user_id: userProfileId,
-            seller_id: clerkUserId
+            user_id: userProfileId
           })
           .select()
           .single();
