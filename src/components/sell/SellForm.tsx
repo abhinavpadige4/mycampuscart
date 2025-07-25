@@ -187,7 +187,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                   placeholder="2500"
                   className={`pl-10 ${errors.price ? "border-destructive" : ""}`}
                   value={formData.price || ""}
-                  onChange={(e) => handleInputChange('price', e.target.value)}
+                  onChange={(e) => handleInputChange('price', parseFloat(e.target.value) || 0)}
                   required
                 />
               </div>
