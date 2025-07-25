@@ -70,11 +70,19 @@ serve(async (req) => {
         );
 
       case 'createProduct':
+        // Validate input data
+        if (!data || typeof data !== 'object') {
+          return new Response(
+            JSON.stringify({ error: 'Invalid product data' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
         // First ensure user profile exists
         let userProfileId;
         const { data: userProfile, error: profileError } = await supabase
           .from('user_profiles')
-          .select('id')
+          .select('id, role')
           .eq('clerk_user_id', clerkUserId)
           .single();
 
@@ -93,6 +101,7 @@ serve(async (req) => {
             .single();
 
           if (createProfileError) {
+            console.error('Failed to create user profile:', createProfileError);
             return new Response(
               JSON.stringify({ error: 'Failed to create user profile' }),
               { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -100,24 +109,62 @@ serve(async (req) => {
           }
           userProfileId = newProfile.id;
         } else {
+          // Check if user is blocked
+          if (userProfile.role === 'blocked') {
+            return new Response(
+              JSON.stringify({ error: 'Account is blocked' }),
+              { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
           userProfileId = userProfile.id;
+        }
+
+        // Validate and sanitize product data
+        const sanitizedData = {
+          title: data.title?.trim(),
+          description: data.description?.trim(),
+          price: parseFloat(data.price) || 0,
+          category: data.category?.trim(),
+          condition: data.condition?.trim(),
+          location: data.location?.trim(),
+          images: Array.isArray(data.images) ? data.images.slice(0, 5) : [], // Limit to 5 images
+          whatsapp_number: data.whatsapp_number?.trim() || null
+        };
+
+        // Validate required fields
+        if (!sanitizedData.title || !sanitizedData.description || !sanitizedData.category || !sanitizedData.condition || !sanitizedData.location) {
+          return new Response(
+            JSON.stringify({ error: 'Missing required fields' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (sanitizedData.price < 0) {
+          return new Response(
+            JSON.stringify({ error: 'Price cannot be negative' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
 
         const { data: product, error: productError } = await supabase
           .from('products')
           .insert({
-            ...data,
+            ...sanitizedData,
             user_id: userProfileId
           })
           .select()
           .single();
 
         if (productError) {
+          console.error('Error creating product:', productError);
           return new Response(
-            JSON.stringify({ error: productError.message }),
+            JSON.stringify({ error: 'Failed to create product' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
+
+        // Log the action for security audit
+        console.log(`Product created by user ${clerkUserId}: ${product.id}`);
 
         return new Response(
           JSON.stringify(product),
