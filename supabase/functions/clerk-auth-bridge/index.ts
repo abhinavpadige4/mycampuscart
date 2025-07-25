@@ -125,14 +125,13 @@ serve(async (req) => {
           description: data.description?.trim(),
           price: parseFloat(data.price) || 0,
           category: data.category?.trim(),
-          condition: data.condition?.trim(),
           location: data.location?.trim(),
           images: Array.isArray(data.images) ? data.images.slice(0, 5) : [], // Limit to 5 images
           whatsapp_number: data.whatsapp_number?.trim() || null
         };
 
         // Validate required fields
-        if (!sanitizedData.title || !sanitizedData.description || !sanitizedData.category || !sanitizedData.condition || !sanitizedData.location) {
+        if (!sanitizedData.title || !sanitizedData.description || !sanitizedData.category || !sanitizedData.location) {
           return new Response(
             JSON.stringify({ error: 'Missing required fields' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -158,7 +157,11 @@ serve(async (req) => {
         if (productError) {
           console.error('Error creating product:', productError);
           return new Response(
-            JSON.stringify({ error: 'Failed to create product' }),
+            JSON.stringify({ 
+              error: 'Failed to create product',
+              details: productError.message,
+              code: productError.code 
+            }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
