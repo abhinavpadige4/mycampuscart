@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useUser } from '@clerk/clerk-react';
+import { useAuth } from '@/hooks/useAuth';
 import { Product, CreateProductData } from '@/types/product';
 import { useToast } from '@/hooks/use-toast';
 
 export const useProducts = () => {
-  const { user } = useUser();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -53,7 +53,11 @@ export const useProducts = () => {
   };
 
   const createProduct = async (productData: CreateProductData): Promise<{ data: Product | null; error: string | null }> => {
-    if (!user) {
+    if (authLoading) {
+      return { data: null, error: 'Authentication loading...' };
+    }
+    
+    if (!isAuthenticated || !user) {
       return { data: null, error: 'User must be authenticated' };
     }
 
