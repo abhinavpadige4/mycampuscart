@@ -32,8 +32,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       <CardHeader className="p-4">
         <div className="relative">
           <img 
-            src={product.image || "/placeholder.svg"} 
-            alt={product.name}
+            src={product.images?.[0] || "/placeholder.svg"} 
+            alt={product.title}
             className="w-full h-48 object-cover rounded-lg bg-muted"
           />
           <Button
@@ -50,7 +50,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="p-4 pt-0">
-        <CardTitle className="text-lg mb-2 line-clamp-2">{product.name}</CardTitle>
+        <CardTitle className="text-lg mb-2 line-clamp-2">{product.title}</CardTitle>
         <CardDescription className="text-sm mb-3 line-clamp-2">
           {product.description}
         </CardDescription>
@@ -69,16 +69,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           </div>
           
           <div className="text-xs text-muted-foreground">
-            by {product.seller_name} • {getTimeAgo(product.created_at)}
-            {product.product_number && ` • ID: ${product.product_number}`}
+            {getTimeAgo(product.created_at)}
           </div>
         </div>
 
         <WhatsAppContact 
           phoneNumber={product.whatsapp_number}
-          productName={product.name}
-          productImage={product.image}
-          productNumber={product.product_number}
+          productName={product.title}
+          productImage={product.images?.[0]}
           className="w-full"
         />
       </CardContent>

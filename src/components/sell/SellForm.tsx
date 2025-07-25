@@ -21,13 +21,14 @@ interface SellFormProps {
 
 export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitting }: SellFormProps) => {
   const [formData, setFormData] = useState<CreateProductData>({
-    name: "",
+    title: "",
     price: 0,
     description: "",
     category: "",
+    condition: "",
     whatsapp_number: "",
     location: "",
-    image: ""
+    images: []
   });
   const [imagePreview, setImagePreview] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -62,7 +63,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
       reader.onload = () => {
         const result = reader.result as string;
         setImagePreview(result);
-        setFormData({ ...formData, image: result });
+        setFormData({ ...formData, images: [result] });
         setErrors({ ...errors, image: "" });
       };
       reader.readAsDataURL(file);
@@ -74,9 +75,9 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
     
     try {
       switch (field) {
-        case 'name':
-          productSchema.shape.name.parse(sanitizeInput(value));
-          delete newErrors.name;
+        case 'title':
+          productSchema.shape.title.parse(sanitizeInput(value));
+          delete newErrors.title;
           break;
         case 'price':
           productSchema.shape.price.parse(Number(value));
@@ -93,11 +94,11 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
             delete newErrors.whatsapp_number;
           }
           break;
-        case 'image':
-          if (value && !validateImageUrl(value)) {
-            newErrors.image = "Invalid or unsafe image URL";
+        case 'images':
+          if (value && value.length > 0 && !validateImageUrl(value[0])) {
+            newErrors.images = "Invalid or unsafe image URL";
           } else {
-            delete newErrors.image;
+            delete newErrors.images;
           }
           break;
       }
@@ -121,7 +122,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
     try {
       const validatedData = productSchema.parse({
         ...formData,
-        name: sanitizeInput(formData.name),
+        title: sanitizeInput(formData.title),
         description: sanitizeInput(formData.description)
       }) as CreateProductData;
       
@@ -130,7 +131,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
         throw new Error("Invalid WhatsApp number");
       }
       
-      if (formData.image && !validateImageUrl(formData.image)) {
+      if (formData.images && formData.images.length > 0 && !validateImageUrl(formData.images[0])) {
         throw new Error("Invalid or unsafe image URL");
       }
       
@@ -159,19 +160,19 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="name">Product Name *</Label>
+              <Label htmlFor="title">Product Name *</Label>
               <Input
-                id="name"
+                id="title"
                 placeholder="e.g., Calculus Textbook - 3rd Edition"
-                value={formData.name}
-                onChange={(e) => handleInputChange('name', e.target.value)}
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
                 required
-                className={errors.name ? "border-destructive" : ""}
+                className={errors.title ? "border-destructive" : ""}
               />
-              {errors.name && (
+              {errors.title && (
                 <p className="text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
-                  {errors.name}
+                  {errors.title}
                 </p>
               )}
             </div>
@@ -210,6 +211,22 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                       {category}
                     </SelectItem>
                   ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="condition">Condition *</Label>
+              <Select onValueChange={(value) => setFormData({ ...formData, condition: value })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select condition" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="like new">Like New</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -283,7 +300,7 @@ export const SellForm = ({ categories, locations, onSubmit, onCancel, isSubmitti
                     variant="outline" 
                     onClick={() => {
                       setImagePreview("");
-                      setFormData({ ...formData, image: "" });
+                      setFormData({ ...formData, images: [] });
                     }}
                   >
                     Change Photo

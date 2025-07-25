@@ -118,8 +118,8 @@ export const MyListings = () => {
                   <CardHeader className="p-4">
                     <div className="relative">
                       <img 
-                        src={listing.image || "/placeholder.svg"} 
-                        alt={listing.name}
+                        src={listing.images?.[0] || "/placeholder.svg"} 
+                        alt={listing.title}
                         className="w-full h-48 object-cover rounded-lg bg-muted"
                       />
                       <Badge 
@@ -132,7 +132,7 @@ export const MyListings = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    <CardTitle className="text-lg mb-2 line-clamp-2">{listing.name}</CardTitle>
+                    <CardTitle className="text-lg mb-2 line-clamp-2">{listing.title}</CardTitle>
                     <CardDescription className="text-sm mb-3 line-clamp-2">
                       {listing.description}
                     </CardDescription>

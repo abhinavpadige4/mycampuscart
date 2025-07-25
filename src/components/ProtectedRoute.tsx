@@ -1,8 +1,8 @@
-
 import { useAuth } from "@/hooks/useAuth";
-import { AuthForm } from "./AuthForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Shield, Loader2 } from "lucide-react";
+import { SignInButton } from "@clerk/clerk-react";
+import { Button } from "./ui/button";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
-  const { loading, isAuthenticated, isAdmin, profile } = useAuth();
+  const { loading, isAuthenticated, isAdmin, userRole } = useAuth();
 
   if (loading) {
     return (
@@ -21,10 +21,27 @@ export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRout
   }
 
   if (!isAuthenticated) {
-    return <AuthForm />;
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="marketplace-card max-w-md w-full">
+          <CardHeader className="text-center">
+            <Shield className="h-12 w-12 mx-auto text-primary mb-4" />
+            <CardTitle className="text-2xl">Authentication Required</CardTitle>
+            <CardDescription>
+              You need to be signed in to access this page.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <SignInButton fallbackRedirectUrl="/dashboard">
+              <Button>Sign In</Button>
+            </SignInButton>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
-  if (profile?.role === 'blocked') {
+  if (userRole === 'blocked') {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="marketplace-card max-w-md w-full">

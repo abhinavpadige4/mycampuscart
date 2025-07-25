@@ -8,7 +8,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { Suspense, lazy } from "react";
-import { AuthForm } from "@/components/AuthForm";
+// Clerk handles authentication
 
 // Lazy load pages for better performance
 const Index = lazy(() => import("./pages/Index"));
@@ -44,7 +44,7 @@ const App = () => (
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<AuthForm />} />
+              {/* Clerk handles auth, no need for auth route */}
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/sell" element={<Sell />} />
               <Route path="/marketplace" element={<Marketplace />} />

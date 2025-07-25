@@ -1,36 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useUser } from '@clerk/clerk-react';
+import { Product, CreateProductData } from '@/types/product';
 import { useToast } from '@/hooks/use-toast';
 
-export interface Product {
-  id: string;
-  user_id: string;
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  condition: string;
-  location: string;
-  images: string[];
-  whatsapp_number?: string;
-  status: string;
-  views_count: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreateProductData {
-  title: string;
-  description: string;
-  price: number;
-  category: string;
-  condition: string;
-  location: string;
-  whatsapp_number?: string;
-  images?: string[];
-}
-
 export const useProducts = () => {
+  const { user } = useUser();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -77,32 +52,39 @@ export const useProducts = () => {
     }
   };
 
-  const createProduct = async (productData: CreateProductData): Promise<Product> => {
+  const createProduct = async (productData: CreateProductData): Promise<{ data: Product | null; error: string | null }> => {
+    if (!user) {
+      return { data: null, error: 'User must be authenticated' };
+    }
+
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .insert(productData)
-        .select()
-        .single();
+      // Use the clerk-auth-bridge edge function to create products
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user.id,
+          action: 'createProduct',
+          data: productData
+        }
+      });
 
       if (error) throw error;
-      
+
       setProducts(current => [data, ...current]);
       
       toast({
         title: "Success!",
         description: "Your product has been listed successfully.",
       });
-      
-      return data;
-    } catch (error) {
+
+      return { data, error: null };
+    } catch (error: any) {
       console.error('Error creating product:', error);
       toast({
         title: "Error",
         description: "Failed to create product. Please try again.",
         variant: "destructive"
       });
-      throw error;
+      return { data: null, error: error.message };
     }
   };
 
