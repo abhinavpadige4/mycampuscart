@@ -148,6 +148,15 @@
 
   .marketplace-card {
     @apply bg-card border border-border rounded-lg shadow-card hover:shadow-elevated transition-all duration-300;
+    background: linear-gradient(145deg, hsl(var(--card)) 0%, hsl(var(--card))/95% 100%);
+  }
+
+  .marketplace-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 25px 50px -12px hsl(var(--primary) / 0.15),
+      0 0 0 1px hsl(var(--primary) / 0.1),
+      inset 0 1px 0 hsl(var(--primary-glow) / 0.1);
   }
 
   .hero-text {
@@ -155,5 +164,31 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Enhanced product grid styles */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .product-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+
+  /* Like button animation */
+  .like-button-animate {
+    animation: likeHeartBeat 0.6s ease;
+  }
+
+  @keyframes likeHeartBeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.2); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
   }
 }

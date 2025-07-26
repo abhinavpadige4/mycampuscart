@@ -12,16 +12,29 @@ interface WhatsAppContactProps {
 
 export const WhatsAppContact = ({ phoneNumber, productName, productImage, productNumber, className }: WhatsAppContactProps) => {
   const handleWhatsAppClick = () => {
+    if (!phoneNumber) {
+      alert('WhatsApp number not available for this product');
+      return;
+    }
+    
     let message = `Hi! I'm interested in your product: ${productName}`;
     if (productNumber) {
       message += `\nProduct ID: ${productNumber}`;
     }
     if (productImage) {
-      message += `\n\nProduct Image: ${productImage}`;
+      message += `\n\nProduct Image: ${window.location.origin}${productImage}`;
     }
     message += `\n\nPlease let me know if it's still available!`;
+    
     const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}?text=${encodedMessage}`;
+    const cleanPhoneNumber = phoneNumber.replace(/[^0-9]/g, '');
+    
+    if (cleanPhoneNumber.length < 10) {
+      alert('Invalid phone number format');
+      return;
+    }
+    
+    const whatsappUrl = `https://wa.me/${cleanPhoneNumber}?text=${encodedMessage}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -30,9 +43,10 @@ export const WhatsAppContact = ({ phoneNumber, productName, productImage, produc
       variant="gradient" 
       onClick={handleWhatsAppClick}
       className={className}
+      disabled={!phoneNumber}
     >
       <MessageCircle className="h-4 w-4 mr-2" />
-      Chat on WhatsApp
+      {phoneNumber ? 'Chat on WhatsApp' : 'Contact Not Available'}
     </Button>
   );
 };

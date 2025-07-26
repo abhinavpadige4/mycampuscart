@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { MarketplaceHeader } from "@/components/marketplace/MarketplaceHeader";
@@ -32,38 +33,42 @@ export const Marketplace = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         
-        <div className="max-w-7xl mx-auto p-6">
-          <MarketplaceHeader onBackClick={() => navigate('/dashboard')} />
-          
-          <MarketplaceFilters
-            searchTerm={searchTerm}
-            selectedCategory={selectedCategory}
-            selectedLocation={selectedLocation}
-            onSearchChange={setSearchTerm}
-            onCategoryChange={setSelectedCategory}
-            onLocationChange={setSelectedLocation}
-          />
-
-          <div className="mb-6">
-            <p className="text-muted-foreground">
-              {loading ? 'Loading...' : `${products.length} ${products.length === 1 ? 'item' : 'items'} found`}
-            </p>
-          </div>
-
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : (
-            <ProductGrid 
-              products={products}
-              onClearFilters={handleClearFilters}
+        <main className="flex-1">
+          <div className="max-w-7xl mx-auto p-6">
+            <MarketplaceHeader onBackClick={() => navigate('/dashboard')} />
+            
+            <MarketplaceFilters
+              searchTerm={searchTerm}
+              selectedCategory={selectedCategory}
+              selectedLocation={selectedLocation}
+              onSearchChange={setSearchTerm}
+              onCategoryChange={setSelectedCategory}
+              onLocationChange={setSelectedLocation}
             />
-          )}
-        </div>
+
+            <div className="mb-6">
+              <p className="text-muted-foreground">
+                {loading ? 'Loading...' : `${products.length} ${products.length === 1 ? 'item' : 'items'} found`}
+              </p>
+            </div>
+
+            {loading ? (
+              <div className="flex justify-center items-center py-12">
+                <LoadingSpinner size="lg" />
+              </div>
+            ) : (
+              <ProductGrid 
+                products={products}
+                onClearFilters={handleClearFilters}
+              />
+            )}
+          </div>
+        </main>
+        
+        <Footer />
       </div>
     </ProtectedRoute>
   );
