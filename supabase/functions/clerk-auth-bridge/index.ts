@@ -49,6 +49,9 @@ serve(async (req) => {
 
         // If profile doesn't exist, create it
         if (!existingProfile) {
+          // Check if this is the admin email
+          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
+          
           const { error: createError } = await supabase
             .from('user_profiles')
             .insert({
@@ -56,12 +59,17 @@ serve(async (req) => {
               email: data?.email || `${clerkUserId}@temp.com`,
               first_name: data?.first_name || null,
               last_name: data?.last_name || null,
-              role: 'user'
+              role: isAdminEmail ? 'admin' : 'user'
             });
 
           if (createError) {
             console.error('Error creating profile:', createError);
           }
+          
+          return new Response(
+            JSON.stringify({ role: isAdminEmail ? 'admin' : 'user' }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
 
         return new Response(
@@ -88,6 +96,8 @@ serve(async (req) => {
 
         if (profileError) {
           // Create user profile if it doesn't exist
+          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
+          
           const { data: newProfile, error: createProfileError } = await supabase
             .from('user_profiles')
             .insert({
@@ -95,7 +105,7 @@ serve(async (req) => {
               email: data?.email || `${clerkUserId}@temp.com`,
               first_name: data?.first_name || null,
               last_name: data?.last_name || null,
-              role: 'user'
+              role: isAdminEmail ? 'admin' : 'user'
             })
             .select('id')
             .single();
