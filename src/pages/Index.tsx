@@ -17,11 +17,8 @@ const Index = () => {
   }, [isLoaded, isAuthenticated, navigate]);
 
   const handleGetStarted = () => {
-    if (isAuthenticated) {
-      navigate('/marketplace');
-    } else {
-      navigate('/sign-in');
-    }
+    // Always navigate to sign-in for non-authenticated users
+    navigate('/sign-in');
   };
 
   if (!isLoaded) {

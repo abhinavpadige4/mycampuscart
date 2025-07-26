@@ -1,58 +1,94 @@
-import { Mail, Heart } from "lucide-react";
+import { Mail, Heart, MapPin } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <footer className="bg-background border-t">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-primary flex items-center justify-center mr-3">
-                <Mail className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold hero-text">MyCampusCart</span>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              Your trusted student marketplace for buying and selling campus essentials.
+    <footer className="bg-black border-t border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+          {/* Brand Section */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-semibold text-emerald-400">MyCampusCart</h3>
+            <p className="text-sm text-gray-400 max-w-xs">
+              Your trusted marketplace for buying and selling used items within the campus community.
+            </p>
+            <p className="text-sm text-gray-400">
+              Made with <Heart className="inline h-4 w-4 text-red-500" /> for students
             </p>
           </div>
-          
-          <div>
-            <h3 className="font-semibold mb-4">Support</h3>
-            <div className="space-y-2">
-              <a 
-                href="mailto:help.mycampuscart@gmail.com" 
-                className="text-muted-foreground hover:text-primary transition-colors flex items-center"
-              >
-                <Mail className="h-4 w-4 mr-2" />
-                help.mycampuscart@gmail.com
+
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Quick Links</h3>
+            <div className="space-y-3">
+              <a href="/marketplace" className="block text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+                Browse Products
               </a>
-              <p className="text-muted-foreground text-sm">
-                We're here to help you!
-              </p>
+              <a href="/sell" className="block text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+                Sell Your Item
+              </a>
+              <a href="/my-listings" className="block text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+                My Listings
+              </a>
+              <a href="#" className="block text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+                Safety Tips
+              </a>
             </div>
           </div>
-          
-          <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <div className="space-y-2">
-              <a href="/marketplace" className="text-muted-foreground hover:text-primary transition-colors block">
-                Browse Items
+
+          {/* Get Help */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Get Help</h3>
+            <div className="space-y-3">
+              <a 
+                href="mailto:help.mycampuscart@gmail.com" 
+                className="flex items-center space-x-2 text-sm text-gray-400 hover:text-emerald-400 transition-colors"
+              >
+                <Mail className="h-4 w-4" />
+                <span>help.mycampuscart@gmail.com</span>
               </a>
-              <a href="/sell" className="text-muted-foreground hover:text-primary transition-colors block">
-                Sell Items
-              </a>
-              <a href="/dashboard" className="text-muted-foreground hover:text-primary transition-colors block">
-                My Account
-              </a>
+              <div className="flex items-center space-x-2 text-sm text-gray-400">
+                <MapPin className="h-4 w-4" />
+                <span>Hyderabad, Pune, Bangalore</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Our Impact</h3>
+            <div className="space-y-3">
+              <div className="text-sm">
+                <div className="text-emerald-400 font-semibold">1000+</div>
+                <div className="text-gray-400">Active Users</div>
+              </div>
+              <div className="text-sm">
+                <div className="text-emerald-400 font-semibold">500+</div>
+                <div className="text-gray-400">Items Sold</div>
+              </div>
+              <div className="text-sm">
+                <div className="text-emerald-400 font-semibold">3</div>
+                <div className="text-gray-400">Cities</div>
+              </div>
             </div>
           </div>
         </div>
-        
-        <div className="border-t mt-8 pt-8 text-center">
-          <p className="text-muted-foreground text-sm flex items-center justify-center">
-            Made with <Heart className="h-4 w-4 mx-1 text-red-500" /> for students
+
+        {/* Bottom Section */}
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-sm text-gray-400">
+            © 2024 MyCampusCart. All rights reserved.
           </p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+              Terms of Service
+            </a>
+            <a href="#" className="text-sm text-gray-400 hover:text-emerald-400 transition-colors">
+              Support
+            </a>
+          </div>
         </div>
       </div>
     </footer>

@@ -21,9 +21,7 @@ export const WhatsAppContact = ({ phoneNumber, productName, productImage, produc
     if (productNumber) {
       message += `\nProduct ID: ${productNumber}`;
     }
-    if (productImage) {
-      message += `\n\nProduct Image: ${window.location.origin}${productImage}`;
-    }
+    // Remove product image from WhatsApp message to fix broken link issue
     message += `\n\nPlease let me know if it's still available!`;
     
     const encodedMessage = encodeURIComponent(message);
