@@ -33,7 +33,7 @@ export const Marketplace = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-black flex flex-col">
         <Navbar />
         
         <main className="flex-1">
@@ -50,7 +50,7 @@ export const Marketplace = () => {
             />
 
             <div className="mb-6">
-              <p className="text-muted-foreground">
+              <p className="text-gray-400">
                 {loading ? 'Loading...' : `${products.length} ${products.length === 1 ? 'item' : 'items'} found`}
               </p>
             </div>

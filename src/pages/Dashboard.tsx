@@ -28,7 +28,7 @@ export const Dashboard = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-black flex flex-col">
         <Navbar />
         <main className="flex-1">
           <div className="max-w-6xl mx-auto p-6">

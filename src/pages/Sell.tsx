@@ -27,7 +27,7 @@ export const Sell = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-black">
         <Navbar />
         
         <div className="max-w-4xl mx-auto p-6">

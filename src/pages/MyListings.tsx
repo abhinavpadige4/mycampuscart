@@ -72,7 +72,7 @@ export const MyListings = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-black">
         <Navbar />
         
         <div className="max-w-7xl mx-auto p-6">
@@ -80,15 +80,15 @@ export const MyListings = () => {
             <Button 
               variant="ghost" 
               onClick={() => navigate('/dashboard')}
-              className="mb-4"
+              className="mb-4 text-white hover:bg-gray-800"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
-            <h1 className="text-3xl font-bold mb-2">
-              My <span className="hero-text">Listings</span>
+            <h1 className="text-3xl font-bold mb-2 text-white">
+              My <span className="text-emerald-400">Listings</span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-gray-400">
               Manage your items for sale
             </p>
           </div>
@@ -98,15 +98,15 @@ export const MyListings = () => {
               <LoadingSpinner size="lg" />
             </div>
           ) : listings.length === 0 ? (
-            <Card className="marketplace-card text-center py-12">
+            <Card className="bg-gray-900/50 border-gray-800 text-center py-12">
               <CardHeader>
-                <CardTitle>No listings yet</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-white">No listings yet</CardTitle>
+                <CardDescription className="text-gray-400">
                   You haven't listed any items for sale yet.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button onClick={() => navigate('/sell')} variant="gradient">
+                <Button onClick={() => navigate('/sell')} className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white">
                   Create Your First Listing
                 </Button>
               </CardContent>
@@ -114,7 +114,7 @@ export const MyListings = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {listings.map((listing) => (
-                <Card key={listing.id} className="marketplace-card">
+                <Card key={listing.id} className="bg-gray-900/50 border-gray-800">
                   <CardHeader className="p-4">
                     <div className="relative">
                       <img 
@@ -132,25 +132,25 @@ export const MyListings = () => {
                     </div>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
-                    <CardTitle className="text-lg mb-2 line-clamp-2">{listing.title}</CardTitle>
-                    <CardDescription className="text-sm mb-3 line-clamp-2">
+                    <CardTitle className="text-lg mb-2 line-clamp-2 text-white">{listing.title}</CardTitle>
+                    <CardDescription className="text-sm mb-3 line-clamp-2 text-gray-400">
                       {listing.description}
                     </CardDescription>
                     
                     <div className="space-y-2 mb-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold price-text">
+                        <span className="text-2xl font-bold text-emerald-400">
                           ₹{listing.price}
                         </span>
-                        <Badge variant="outline">{listing.category}</Badge>
+                        <Badge variant="outline" className="border-gray-600 text-gray-300">{listing.category}</Badge>
                       </div>
                       
-                      <div className="flex items-center text-sm text-muted-foreground">
+                      <div className="flex items-center text-sm text-gray-400">
                         <MapPin className="h-3 w-3 mr-1" />
                         {listing.location}
                       </div>
                       
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-gray-400">
                         Listed {getTimeAgo(listing.created_at)}
                       </div>
                     </div>
@@ -160,14 +160,14 @@ export const MyListings = () => {
                         variant="outline"
                         size="sm"
                         onClick={() => handleStatusToggle(listing.id, listing.status)}
-                        className="flex-1"
+                        className="flex-1 border-gray-600 text-white hover:bg-gray-700"
                       >
                         Mark as {listing.status === 'active' ? 'Sold' : 'Active'}
                       </Button>
                       
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="destructive" size="sm">
+                          <Button className="bg-red-600 hover:bg-red-700 text-white" size="sm">
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </AlertDialogTrigger>
