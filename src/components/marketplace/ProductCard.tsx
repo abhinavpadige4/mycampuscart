@@ -2,11 +2,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Heart, MapPin, Eye, Clock, Star } from "lucide-react";
+import { MapPin, Clock, Star } from "lucide-react";
 import { Product } from "@/types/product";
 import { WhatsAppContact } from "@/components/WhatsAppContact";
-import { useLikes } from "@/hooks/useLikes";
-import { cn } from "@/lib/utils";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
 
 interface ProductCardProps {
@@ -14,7 +12,6 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
-  const { toggleLike, isLiked, loading } = useLikes();
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -39,28 +36,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             
-            {/* Like Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={loading}
-              className={cn(
-                "absolute top-3 right-3 backdrop-blur-md bg-background/20 border border-white/20 transition-all duration-300",
-                isLiked(product.id) 
-                  ? "text-red-500 hover:text-red-600 bg-red-500/10" 
-                  : "text-white hover:text-red-500 hover:bg-red-500/10"
-              )}
-              onClick={() => toggleLike(product.id)}
-            >
-              <Heart 
-                className={cn(
-                  "h-4 w-4 transition-all",
-                  isLiked(product.id) && "fill-current"
-                )} 
-              />
-            </Button>
-
-            {/* Premium Badge */}
+            {/* Category Badge */}
             <div className="absolute top-3 left-3">
               <Badge className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-lg border-0">
                 <Star className="h-3 w-3 mr-1" />
@@ -76,12 +52,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               >
                 {product.status}
               </Badge>
-            </div>
-
-            {/* Views indicator */}
-            <div className="absolute bottom-3 right-3 flex items-center text-white text-xs bg-black/40 backdrop-blur-sm px-2 py-1 rounded-full">
-              <Eye className="h-3 w-3 mr-1" />
-              {product.views_count || 0}
             </div>
           </div>
         </CardHeader>
