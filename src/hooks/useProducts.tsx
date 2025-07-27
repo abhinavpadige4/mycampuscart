@@ -146,13 +146,26 @@ export const useProducts = () => {
     }
   };
 
-  const fetchUserProducts = async (userId: string): Promise<Product[]> => {
+  const fetchUserProducts = async (clerkUserId: string): Promise<Product[]> => {
     setLoading(true);
     try {
+      // First get the user's UUID from user_profiles table
+      const { data: userProfile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('id')
+        .eq('clerk_user_id', clerkUserId)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching user profile:', profileError);
+        throw profileError;
+      }
+
+      // Now fetch products using the UUID
       const { data, error } = await supabase
         .from('products')
         .select('*')
-        .eq('user_id', userId)
+        .eq('user_id', userProfile.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
