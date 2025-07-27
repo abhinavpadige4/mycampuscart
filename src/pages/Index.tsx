@@ -17,8 +17,8 @@ const Index = () => {
   }, [isLoaded, isAuthenticated, navigate]);
 
   const handleGetStarted = () => {
-    // Always navigate to sign-in for non-authenticated users
-    navigate('/sign-in');
+    // Navigate to dashboard since Clerk handles auth automatically
+    navigate('/dashboard');
   };
 
   if (!isLoaded) {
