@@ -43,7 +43,7 @@ export const Dashboard = ({
     ...userActions,
     {
       title: "Admin Panel",
-      description: "Manage users, listings, and analytics",
+      description: "Manage users, delete accounts, and block users",
       icon: <Users className="h-8 w-8 text-red-400" />,
       onClick: onAdminClick,
     }

@@ -17,6 +17,7 @@ const Sell = lazy(() => import("./pages/Sell").then(module => ({ default: module
 const Marketplace = lazy(() => import("./pages/Marketplace").then(module => ({ default: module.Marketplace })));
 const MyListings = lazy(() => import("./pages/MyListings").then(module => ({ default: module.MyListings })));
 const Admin = lazy(() => import("./pages/Admin").then(module => ({ default: module.Admin })));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient({
@@ -49,6 +50,7 @@ const App = () => (
               <Route path="/marketplace" element={<Marketplace />} />
               <Route path="/my-listings" element={<MyListings />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin-panel" element={<AdminPanel />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

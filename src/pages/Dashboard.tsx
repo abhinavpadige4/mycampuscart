@@ -23,7 +23,7 @@ export const Dashboard = () => {
   };
 
   const handleAdminClick = () => {
-    navigate('/admin');
+    navigate('/admin-panel');
   };
 
   return (
