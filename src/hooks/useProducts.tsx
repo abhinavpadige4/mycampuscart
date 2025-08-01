@@ -154,7 +154,7 @@ export const useProducts = () => {
         .from('user_profiles')
         .select('id')
         .eq('clerk_user_id', clerkUserId)
-        .single();
+        .maybeSingle();
 
       if (profileError) {
         console.error('Error fetching user profile:', profileError);
