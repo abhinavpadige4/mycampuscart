@@ -1,0 +1,34 @@
+-- Set the specific user as admin
+UPDATE user_profiles 
+SET role = 'admin' 
+WHERE email = 'abhinavpadige06@gmail.com';
+
+-- Also create a better trigger to make first user admin automatically
+DROP TRIGGER IF EXISTS on_first_user_admin ON user_profiles;
+
+CREATE OR REPLACE FUNCTION public.set_first_user_as_admin()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = 'public'
+AS $function$
+DECLARE
+    user_count INTEGER;
+BEGIN
+    -- Check if this is the first user
+    SELECT COUNT(*) INTO user_count FROM public.user_profiles;
+    
+    -- If this is the first user or the email matches admin, make them admin
+    IF user_count = 0 OR NEW.email = 'abhinavpadige06@gmail.com' THEN
+        NEW.role := 'admin';
+    END IF;
+    
+    RETURN NEW;
+END;
+$function$;
+
+-- Create the trigger
+CREATE TRIGGER on_first_user_admin
+    BEFORE INSERT ON user_profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION set_first_user_as_admin();
