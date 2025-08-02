@@ -6,12 +6,14 @@ import { MapPin, Clock, Star } from "lucide-react";
 import { Product } from "@/types/product";
 import { WhatsAppContact } from "@/components/WhatsAppContact";
 import { BackgroundGradient } from "@/components/ui/background-gradient";
+import { OptimizedImage } from "@/components/OptimizedImage";
+import { memo } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = memo(({ product }: ProductCardProps) => {
 
   const getTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
@@ -29,7 +31,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       <Card className="bg-gray-900/90 border-gray-800 backdrop-blur-sm">
         <CardHeader className="p-0">
           <div className="relative overflow-hidden rounded-t-lg">
-            <img 
+            <OptimizedImage
               src={product.images?.[0] || "/placeholder.svg"} 
               alt={product.title}
               className="w-full h-56 object-cover transition-transform duration-300 group-hover:scale-110"
@@ -103,4 +105,4 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </Card>
     </BackgroundGradient>
   );
-};
+});

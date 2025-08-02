@@ -184,7 +184,10 @@ export const useProducts = () => {
   };
 
   useEffect(() => {
-    fetchProducts();
+    // Only fetch if products array is empty to avoid unnecessary refetches
+    if (products.length === 0) {
+      fetchProducts();
+    }
   }, []);
 
   return {
