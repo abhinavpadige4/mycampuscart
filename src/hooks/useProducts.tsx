@@ -161,6 +161,11 @@ export const useProducts = () => {
         throw profileError;
       }
 
+      if (!userProfile) {
+        console.warn('No user profile found for Clerk user ID:', clerkUserId);
+        return [];
+      }
+
       // Now fetch products using the UUID
       const { data, error } = await supabase
         .from('products')
