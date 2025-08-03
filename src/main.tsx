@@ -10,8 +10,8 @@ import "./index.css";
 
 const queryClient = new QueryClient();
 
-// Get Clerk publishable key from environment or use the provided key
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_live_Y2xlcmsuc3R1ZGVudGNhbXB1c21hcmtldHBsYWNlLnNpdGUk";
+// Get Clerk publishable key from environment
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");
