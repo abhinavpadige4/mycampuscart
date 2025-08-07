@@ -7,11 +7,20 @@ import { ClerkProvider } from "@clerk/clerk-react";
 import { Toaster } from "@/components/ui/toaster";
 import App from "./App.tsx";
 import "./index.css";
+import { env } from "@/lib/env";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: env.CACHE_DURATION,
+      gcTime: env.CACHE_DURATION, // Updated property name for v5
+      retry: 2,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-// Get Clerk publishable key from environment
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || "pk_test_Y29tcG9zZWQtZ2liYm9uLTgwLmNsZXJrLmFjY291bnRzLmRldiQ";
+const PUBLISHABLE_KEY = env.CLERK_PUBLISHABLE_KEY;
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");

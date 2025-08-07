@@ -149,20 +149,53 @@ export const useProducts = () => {
   const fetchUserProducts = async (clerkUserId: string): Promise<Product[]> => {
     setLoading(true);
     try {
-      // First get the user's UUID from user_profiles table
-      const { data: userProfile, error: profileError } = await supabase
-        .from('user_profiles')
-        .select('id')
-        .eq('clerk_user_id', clerkUserId)
-        .maybeSingle();
+      // First get the user's UUID from user_profiles table with retry logic
+      let retryCount = 0;
+      let userProfile = null;
+      
+      while (retryCount < 3) {
+        const { data, error: profileError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('clerk_user_id', clerkUserId)
+          .maybeSingle();
 
-      if (profileError) {
-        console.error('Error fetching user profile:', profileError);
-        throw profileError;
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          throw profileError;
+        }
+
+        if (data) {
+          userProfile = data;
+          break;
+        }
+
+        // If no profile found, try to create one using the edge function
+        if (retryCount === 0) {
+          console.log('No user profile found, attempting to create one...');
+          try {
+            await supabase.functions.invoke('clerk-auth-bridge', {
+              body: {
+                clerkUserId,
+                action: 'getUserRole',
+                data: {}
+              }
+            });
+            // Wait a bit for the profile to be created
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          } catch (edgeError) {
+            console.error('Error calling edge function:', edgeError);
+          }
+        }
+
+        retryCount++;
+        if (retryCount < 3) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
       }
 
       if (!userProfile) {
-        console.warn('No user profile found for Clerk user ID:', clerkUserId);
+        console.warn('No user profile found for Clerk user ID after retries:', clerkUserId);
         return [];
       }
 

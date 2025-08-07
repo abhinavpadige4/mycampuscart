@@ -7,6 +7,7 @@ import { Routes, Route } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { LoadingFallback } from "@/components/LoadingFallback";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
+import { UserProfileSync } from "@/components/UserProfileSync";
 import { Suspense, lazy } from "react";
 // Clerk handles authentication
 
@@ -41,6 +42,7 @@ const App = () => (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <PerformanceMonitor />
+        <UserProfileSync />
         <Toaster />
         <Sonner />
           <Suspense fallback={<LoadingFallback />}>
