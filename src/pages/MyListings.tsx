@@ -16,17 +16,15 @@ import { useProducts } from "@/hooks/useProducts";
 export const MyListings = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { deleteProduct, updateProduct, fetchUserProducts } = useProducts();
-  const [listings, setListings] = useState<Product[]>([]);
+  const { products, deleteProduct, updateProduct, fetchUserProducts } = useProducts();
   const [loading, setLoading] = useState(true);
 
   const loadUserListings = async () => {
     if (!user?.id) return;
     
     try {
-      // Use clerk user ID for fetching products
-      const userProducts = await fetchUserProducts(user.id);
-      setListings(userProducts);
+      // Use the updated hook method that doesn't take parameters
+      await fetchUserProducts();
     } catch (error) {
       console.error('Error fetching user listings:', error);
     } finally {
@@ -41,7 +39,7 @@ export const MyListings = () => {
   const handleDelete = async (id: string) => {
     try {
       await deleteProduct(id);
-      setListings(listings.filter(listing => listing.id !== id));
+      // Products will be refreshed automatically by the hook
     } catch (error) {
       console.error('Error deleting listing:', error);
     }
@@ -51,9 +49,7 @@ export const MyListings = () => {
     const newStatus = currentStatus === 'active' ? 'sold' : 'active';
     try {
       await updateProduct(id, { status: newStatus });
-      setListings(listings.map(listing => 
-        listing.id === id ? { ...listing, status: newStatus } : listing
-      ));
+      // Products will be refreshed automatically by the hook
     } catch (error) {
       console.error('Error updating listing status:', error);
     }
@@ -97,7 +93,7 @@ export const MyListings = () => {
             <div className="flex justify-center items-center py-12">
               <LoadingSpinner size="lg" />
             </div>
-          ) : listings.length === 0 ? (
+          ) : products.length === 0 ? (
             <Card className="bg-gray-900/50 border-gray-800 text-center py-12">
               <CardHeader>
                 <CardTitle className="text-white">No listings yet</CardTitle>
@@ -113,7 +109,7 @@ export const MyListings = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {listings.map((listing) => (
+              {products.map((listing) => (
                 <Card key={listing.id} className="bg-gray-900/50 border-gray-800">
                   <CardHeader className="p-4">
                     <div className="relative">

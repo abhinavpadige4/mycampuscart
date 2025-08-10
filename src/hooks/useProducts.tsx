@@ -1,95 +1,120 @@
 import { useState, useEffect } from 'react';
+import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/hooks/useAuth';
 import { Product, CreateProductData } from '@/types/product';
-import { useToast } from '@/hooks/use-toast';
 
 export const useProducts = () => {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user } = useUser();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch user's products
+  const fetchUserProducts = async () => {
+    if (!user) {
+      setProducts([]);
+      return;
+    }
+
+    try {
+      console.log('Fetching products for Clerk user:', user.id);
+      
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user.id,
+          action: 'getUserProducts',
+          data: {
+            email: user.emailAddresses[0]?.emailAddress,
+            firstName: user.firstName,
+            lastName: user.lastName
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      setProducts(data?.products || []);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching user products:', error);
+      setError('Failed to fetch your products');
+      setProducts([]);
+    }
+  };
+
+  // Fetch all products for marketplace
+  const fetchAllProducts = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user?.id || 'anonymous',
+          action: 'getAllProducts'
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching all products:', error);
+        throw error;
+      }
+
+      setAllProducts(data?.products || []);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setError('Failed to fetch products');
+      setAllProducts([]);
+    }
+  };
+
+  // Create new product
+  const createProduct = async (productData: CreateProductData): Promise<boolean> => {
+    if (!user) {
+      setError('You must be logged in to create a product');
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user.id,
+          action: 'createProduct',
+          data: {
+            ...productData,
+            email: user.emailAddresses[0]?.emailAddress,
+            firstName: user.firstName,
+            lastName: user.lastName
+          }
+        }
+      });
+
+      if (error) {
+        console.error('Error creating product:', error);
+        setError('Failed to create product');
+        return false;
+      }
+
+      // Refresh products after creation
+      await fetchUserProducts();
+      setError(null);
+      return true;
+    } catch (error) {
+      console.error('Error creating product:', error);
+      setError('Failed to create product');
+      return false;
+    }
+  };
+
+  // Additional methods for compatibility
   const fetchProducts = async (filters?: {
     category?: string;
     location?: string;
     searchTerm?: string;
   }) => {
-    setLoading(true);
-    try {
-      let query = supabase
-        .from('products')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (filters?.category && filters.category !== 'all') {
-        query = query.eq('category', filters.category);
-      }
-
-      if (filters?.location && filters.location !== 'all') {
-        query = query.eq('location', filters.location);
-      }
-
-      if (filters?.searchTerm) {
-        query = query.or(`title.ilike.%${filters.searchTerm}%,description.ilike.%${filters.searchTerm}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      setProducts(data || []);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch products",
-        variant: "destructive"
-      });
-      setProducts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createProduct = async (productData: CreateProductData): Promise<{ data: Product | null; error: string | null }> => {
-    if (authLoading) {
-      return { data: null, error: 'Authentication loading...' };
-    }
-    
-    if (!isAuthenticated || !user) {
-      return { data: null, error: 'User must be authenticated' };
-    }
-
-    try {
-      // Use the clerk-auth-bridge edge function to create products
-      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
-        body: {
-          clerkUserId: user.id,
-          action: 'createProduct',
-          data: productData
-        }
-      });
-
-      if (error) throw error;
-
-      setProducts(current => [data, ...current]);
-      
-      toast({
-        title: "Success!",
-        description: "Your product has been listed successfully.",
-      });
-
-      return { data, error: null };
-    } catch (error: any) {
-      console.error('Error creating product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create product. Please try again.",
-        variant: "destructive"
-      });
-      return { data: null, error: error.message };
-    }
+    await fetchAllProducts();
   };
 
   const updateProduct = async (id: string, updates: Partial<Product>): Promise<Product> => {
@@ -102,20 +127,9 @@ export const useProducts = () => {
         .single();
 
       if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: "Product updated successfully.",
-      });
-
       return data;
     } catch (error) {
       console.error('Error updating product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update product.",
-        variant: "destructive"
-      });
       throw error;
     }
   };
@@ -128,72 +142,36 @@ export const useProducts = () => {
         .eq('id', id);
 
       if (error) throw error;
-
-      toast({
-        title: "Success!",
-        description: "Product deleted successfully.",
-      });
-
-      setProducts(products.filter(p => p.id !== id));
+      
+      // Refresh products after deletion
+      await fetchUserProducts();
+      await fetchAllProducts();
     } catch (error) {
       console.error('Error deleting product:', error);
-      toast({
-        title: "Error",
-        description: "Failed to delete product.",
-        variant: "destructive"
-      });
       throw error;
     }
   };
 
-  const fetchUserProducts = async (clerkUserId: string): Promise<Product[]> => {
-    setLoading(true);
-    try {
-      console.log('Fetching products for Clerk user:', clerkUserId);
-      
-      // Use edge function to handle user profile creation and product fetching
-      const { data: response, error: edgeError } = await supabase.functions.invoke('clerk-auth-bridge', {
-        body: {
-          clerkUserId,
-          action: 'getUserProducts',
-          data: {}
-        }
-      });
-
-      if (edgeError) {
-        console.error('Edge function error:', edgeError);
-        throw edgeError;
-      }
-
-      console.log('Fetched products:', response?.products?.length || 0);
-      return response?.products || [];
-    } catch (error) {
-      console.error('Error fetching user products:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch your listings. Please try refreshing the page.",
-        variant: "destructive"
-      });
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    // Only fetch if products array is empty to avoid unnecessary refetches
-    if (products.length === 0) {
-      fetchProducts();
-    }
-  }, []);
+    const loadProducts = async () => {
+      setLoading(true);
+      await Promise.all([fetchUserProducts(), fetchAllProducts()]);
+      setLoading(false);
+    };
+
+    loadProducts();
+  }, [user]);
 
   return {
     products,
+    allProducts,
     loading,
-    fetchProducts,
+    error,
     createProduct,
-    updateProduct,
-    deleteProduct,
+    fetchProducts,
     fetchUserProducts,
+    fetchAllProducts,
+    updateProduct,
+    deleteProduct
   };
 };

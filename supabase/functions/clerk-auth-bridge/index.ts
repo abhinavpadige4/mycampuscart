@@ -4,11 +4,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, clerk-user-id',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -23,7 +24,7 @@ serve(async (req) => {
       );
     }
 
-    // Create a Supabase client with service role for admin operations
+    // Create Supabase client with service role for admin operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     
@@ -34,123 +35,91 @@ serve(async (req) => {
       }
     });
 
+    console.log(`Processing action: ${action} for user: ${clerkUserId}`);
+
     switch (action) {
+      case 'createProfile':
+        // Check if profile already exists
+        const { data: existingProfile } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('clerk_user_id', clerkUserId)
+          .single();
+
+        if (existingProfile) {
+          return new Response(
+            JSON.stringify({ success: true, profile: existingProfile }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Create new profile
+        const isAdmin = data?.email === 'abhinavpadige06@gmail.com';
+        
+        const { data: newProfile, error: createError } = await supabase
+          .from('user_profiles')
+          .insert({
+            clerk_user_id: clerkUserId,
+            email: data?.email || `user_${clerkUserId}@temp.com`,
+            first_name: data?.firstName || null,
+            last_name: data?.lastName || null,
+            role: isAdmin ? 'admin' : 'user'
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          return new Response(
+            JSON.stringify({ error: 'Failed to create profile', details: createError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        console.log(`Profile created for user: ${clerkUserId}`);
+        return new Response(
+          JSON.stringify({ success: true, profile: newProfile }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
       case 'getUserRole':
-        // First ensure user profile exists
-        const { data: existingProfile, error: profileFetchError } = await supabase
+        const { data: userProfile } = await supabase
           .from('user_profiles')
           .select('role')
           .eq('clerk_user_id', clerkUserId)
           .single();
 
-        if (profileFetchError && profileFetchError.code !== 'PGRST116') {
-          console.error('Error fetching profile:', profileFetchError);
-        }
-
-        // If profile doesn't exist, create it
-        if (!existingProfile) {
-          // Check if this is the admin email
-          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
-          
-          const { error: createError } = await supabase
-            .from('user_profiles')
-            .insert({
-              clerk_user_id: clerkUserId,
-              email: data?.email || `${clerkUserId}@temp.com`,
-              first_name: data?.first_name || null,
-              last_name: data?.last_name || null,
-              role: isAdminEmail ? 'admin' : 'user'
-            });
-
-          if (createError) {
-            console.error('Error creating profile:', createError);
-          }
-          
-          return new Response(
-            JSON.stringify({ role: isAdminEmail ? 'admin' : 'user' }),
-            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
         return new Response(
-          JSON.stringify({ role: existingProfile?.role || 'user' }),
+          JSON.stringify({ role: userProfile?.role || 'user' }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
       case 'createProduct':
-        // Validate input data
-        if (!data || typeof data !== 'object') {
-          return new Response(
-            JSON.stringify({ error: 'Invalid product data' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        // First ensure user profile exists
-        let userProfileId;
-        const { data: profileData, error: profileError } = await supabase
+        // Get user profile ID
+        const { data: profile } = await supabase
           .from('user_profiles')
           .select('id, role')
           .eq('clerk_user_id', clerkUserId)
           .single();
 
-        if (profileError) {
-          // Create user profile if it doesn't exist
-          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
-          
-          const { data: newProfile, error: createProfileError } = await supabase
-            .from('user_profiles')
-            .insert({
-              clerk_user_id: clerkUserId,
-              email: data?.email || `${clerkUserId}@temp.com`,
-              first_name: data?.first_name || null,
-              last_name: data?.last_name || null,
-              role: isAdminEmail ? 'admin' : 'user'
-            })
-            .select('id')
-            .single();
-
-          if (createProfileError) {
-            console.error('Failed to create user profile:', createProfileError);
-            return new Response(
-              JSON.stringify({ error: 'Failed to create user profile' }),
-              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-          userProfileId = newProfile.id;
-        } else {
-          // Check if user is blocked
-          if (profileData.role === 'blocked') {
-            return new Response(
-              JSON.stringify({ error: 'Account is blocked' }),
-              { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-          userProfileId = profileData.id;
-        }
-
-        // Validate and sanitize product data
-        const sanitizedData = {
-          title: data.title?.trim(),
-          description: data.description?.trim(),
-          price: parseFloat(data.price) || 0,
-          category: data.category?.trim(),
-          location: data.location?.trim(),
-          images: Array.isArray(data.images) ? data.images.slice(0, 5) : [], // Limit to 5 images
-          whatsapp_number: data.whatsapp_number?.trim() || null
-        };
-
-        // Validate required fields
-        if (!sanitizedData.title || !sanitizedData.description || !sanitizedData.category || !sanitizedData.location) {
+        if (!profile) {
           return new Response(
-            JSON.stringify({ error: 'Missing required fields' }),
-            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            JSON.stringify({ error: 'User profile not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
-        if (sanitizedData.price < 0) {
+        if (profile.role === 'blocked') {
           return new Response(
-            JSON.stringify({ error: 'Price cannot be negative' }),
+            JSON.stringify({ error: 'Account is blocked' }),
+            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Validate product data
+        if (!data?.title || !data?.description || !data?.category || !data?.location) {
+          return new Response(
+            JSON.stringify({ error: 'Missing required fields' }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
@@ -158,8 +127,14 @@ serve(async (req) => {
         const { data: product, error: productError } = await supabase
           .from('products')
           .insert({
-            ...sanitizedData,
-            user_id: userProfileId
+            title: data.title.trim(),
+            description: data.description.trim(),
+            price: parseFloat(data.price) || 0,
+            category: data.category.trim(),
+            location: data.location.trim(),
+            images: Array.isArray(data.images) ? data.images.slice(0, 5) : [],
+            whatsapp_number: data.whatsapp_number?.trim() || null,
+            user_id: profile.id
           })
           .select()
           .single();
@@ -167,74 +142,76 @@ serve(async (req) => {
         if (productError) {
           console.error('Error creating product:', productError);
           return new Response(
-            JSON.stringify({ 
-              error: 'Failed to create product',
-              details: productError.message,
-              code: productError.code 
-            }),
+            JSON.stringify({ error: 'Failed to create product', details: productError.message }),
             { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
-        // Log the action for security audit
-        console.log(`Product created by user ${clerkUserId}: ${product.id}`);
-
+        console.log(`Product created: ${product.id} by user: ${clerkUserId}`);
         return new Response(
-          JSON.stringify(product),
+          JSON.stringify({ success: true, product }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
       case 'getUserProducts':
-        // First ensure user profile exists
-        const { data: profileData, error: profileLookupError } = await supabase
+        const { data: userProfileData } = await supabase
           .from('user_profiles')
           .select('id')
           .eq('clerk_user_id', clerkUserId)
-          .maybeSingle();
+          .single();
 
-        let profileId;
-        if (!profileData) {
-          // Create profile if it doesn't exist
-          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
-          
-          const { data: newProfile } = await supabase
-            .from('user_profiles')
-            .insert({
-              clerk_user_id: clerkUserId,
-              email: data?.email || `${clerkUserId}@temp.com`,
-              first_name: data?.first_name || null,
-              last_name: data?.last_name || null,
-              role: isAdminEmail ? 'admin' : 'user'
-            })
-            .select('id')
-            .single();
-
-          profileId = newProfile?.id;
-        } else {
-          profileId = profileData.id;
-        }
-
-        if (!profileId) {
+        if (!userProfileData) {
           return new Response(
             JSON.stringify({ products: [] }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
 
-        // Fetch user's products
         const { data: products, error: productsError } = await supabase
           .from('products')
           .select('*')
-          .eq('user_id', profileId)
+          .eq('user_id', userProfileData.id)
           .order('created_at', { ascending: false });
 
         if (productsError) {
           console.error('Error fetching products:', productsError);
-          throw productsError;
+          return new Response(
+            JSON.stringify({ error: 'Failed to fetch products' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
 
         return new Response(
           JSON.stringify({ products: products || [] }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
+      case 'getAllProducts':
+        const { data: allProducts, error: allProductsError } = await supabase
+          .from('products')
+          .select(`
+            *,
+            user_profiles!inner(first_name, last_name, email)
+          `)
+          .eq('status', 'active')
+          .order('created_at', { ascending: false });
+
+        if (allProductsError) {
+          console.error('Error fetching all products:', allProductsError);
+          return new Response(
+            JSON.stringify({ error: 'Failed to fetch products' }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Format products with seller info
+        const formattedProducts = allProducts.map(product => ({
+          ...product,
+          seller_name: `${product.user_profiles.first_name || ''} ${product.user_profiles.last_name || ''}`.trim() || product.user_profiles.email
+        }));
+
+        return new Response(
+          JSON.stringify({ products: formattedProducts }),
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
@@ -244,10 +221,11 @@ serve(async (req) => {
           { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
     }
+
   } catch (error) {
     console.error('Error in clerk-auth-bridge:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
