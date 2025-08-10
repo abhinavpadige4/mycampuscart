@@ -25,9 +25,11 @@ export const Navbar = ({ onLoginClick }: NavbarProps) => {
             duration={2}
           >
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 flex items-center justify-center">
-                <ShoppingCart className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" 
+                alt="MyCampusCart Logo" 
+                className="h-8 w-8 object-contain"
+              />
               <span className="text-2xl font-bold text-emerald-400">MyCampusCart</span>
             </div>
           </HoverBorderGradient>
