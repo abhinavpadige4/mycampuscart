@@ -88,7 +88,7 @@ serve(async (req) => {
 
         // First ensure user profile exists
         let userProfileId;
-        const { data: userProfile, error: profileError } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('user_profiles')
           .select('id, role')
           .eq('clerk_user_id', clerkUserId)
@@ -120,13 +120,13 @@ serve(async (req) => {
           userProfileId = newProfile.id;
         } else {
           // Check if user is blocked
-          if (userProfile.role === 'blocked') {
+          if (profileData.role === 'blocked') {
             return new Response(
               JSON.stringify({ error: 'Account is blocked' }),
               { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
             );
           }
-          userProfileId = userProfile.id;
+          userProfileId = profileData.id;
         }
 
         // Validate and sanitize product data
