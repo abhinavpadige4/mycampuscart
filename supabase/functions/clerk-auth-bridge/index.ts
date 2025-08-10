@@ -54,7 +54,7 @@ serve(async (req) => {
         }
 
         // Create new profile
-        const isAdmin = data?.email === 'abhinavpadige06@gmail.com' || data?.email === 'abhinavpadige4@gmail.com';
+        const isAdmin = data?.email === 'help.mycampuscart@gmail.com' || data?.email === 'abhinavpadige06@gmail.com';
         
         const { data: newProfile, error: createError } = await supabase
           .from('user_profiles')
