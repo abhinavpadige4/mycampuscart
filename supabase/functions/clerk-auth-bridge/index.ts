@@ -184,6 +184,57 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
+      case 'getUserProducts':
+        // First ensure user profile exists
+        let userProfile = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('clerk_user_id', clerkUserId)
+          .maybeSingle();
+
+        if (!userProfile.data) {
+          // Create profile if it doesn't exist
+          const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
+          
+          const { data: newProfile } = await supabase
+            .from('user_profiles')
+            .insert({
+              clerk_user_id: clerkUserId,
+              email: data?.email || `${clerkUserId}@temp.com`,
+              first_name: data?.first_name || null,
+              last_name: data?.last_name || null,
+              role: isAdminEmail ? 'admin' : 'user'
+            })
+            .select('id')
+            .single();
+
+          userProfile.data = newProfile;
+        }
+
+        if (!userProfile.data) {
+          return new Response(
+            JSON.stringify({ products: [] }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        // Fetch user's products
+        const { data: products, error: productsError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('user_id', userProfile.data.id)
+          .order('created_at', { ascending: false });
+
+        if (productsError) {
+          console.error('Error fetching products:', productsError);
+          throw productsError;
+        }
+
+        return new Response(
+          JSON.stringify({ products: products || [] }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
       default:
         return new Response(
           JSON.stringify({ error: 'Invalid action' }),

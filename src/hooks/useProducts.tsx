@@ -149,70 +149,29 @@ export const useProducts = () => {
   const fetchUserProducts = async (clerkUserId: string): Promise<Product[]> => {
     setLoading(true);
     try {
-      // First get the user's UUID from user_profiles table with retry logic
-      let retryCount = 0;
-      let userProfile = null;
+      console.log('Fetching products for Clerk user:', clerkUserId);
       
-      while (retryCount < 3) {
-        const { data, error: profileError } = await supabase
-          .from('user_profiles')
-          .select('id')
-          .eq('clerk_user_id', clerkUserId)
-          .maybeSingle();
-
-        if (profileError) {
-          console.error('Error fetching user profile:', profileError);
-          throw profileError;
+      // Use edge function to handle user profile creation and product fetching
+      const { data: response, error: edgeError } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId,
+          action: 'getUserProducts',
+          data: {}
         }
+      });
 
-        if (data) {
-          userProfile = data;
-          break;
-        }
-
-        // If no profile found, try to create one using the edge function
-        if (retryCount === 0) {
-          console.log('No user profile found, attempting to create one...');
-          try {
-            await supabase.functions.invoke('clerk-auth-bridge', {
-              body: {
-                clerkUserId,
-                action: 'getUserRole',
-                data: {}
-              }
-            });
-            // Wait a bit for the profile to be created
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (edgeError) {
-            console.error('Error calling edge function:', edgeError);
-          }
-        }
-
-        retryCount++;
-        if (retryCount < 3) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+      if (edgeError) {
+        console.error('Edge function error:', edgeError);
+        throw edgeError;
       }
 
-      if (!userProfile) {
-        console.warn('No user profile found for Clerk user ID after retries:', clerkUserId);
-        return [];
-      }
-
-      // Now fetch products using the UUID
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('user_id', userProfile.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
+      console.log('Fetched products:', response?.products?.length || 0);
+      return response?.products || [];
     } catch (error) {
       console.error('Error fetching user products:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch your listings",
+        description: "Failed to fetch your listings. Please try refreshing the page.",
         variant: "destructive"
       });
       return [];
