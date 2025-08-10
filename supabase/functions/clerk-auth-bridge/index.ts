@@ -186,13 +186,14 @@ serve(async (req) => {
 
       case 'getUserProducts':
         // First ensure user profile exists
-        let userProfile = await supabase
+        const { data: profileData, error: profileLookupError } = await supabase
           .from('user_profiles')
           .select('id')
           .eq('clerk_user_id', clerkUserId)
           .maybeSingle();
 
-        if (!userProfile.data) {
+        let profileId;
+        if (!profileData) {
           // Create profile if it doesn't exist
           const isAdminEmail = data?.email === 'abhinavpadige06@gmail.com';
           
@@ -208,10 +209,12 @@ serve(async (req) => {
             .select('id')
             .single();
 
-          userProfile.data = newProfile;
+          profileId = newProfile?.id;
+        } else {
+          profileId = profileData.id;
         }
 
-        if (!userProfile.data) {
+        if (!profileId) {
           return new Response(
             JSON.stringify({ products: [] }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -222,7 +225,7 @@ serve(async (req) => {
         const { data: products, error: productsError } = await supabase
           .from('products')
           .select('*')
-          .eq('user_id', userProfile.data.id)
+          .eq('user_id', profileId)
           .order('created_at', { ascending: false });
 
         if (productsError) {
