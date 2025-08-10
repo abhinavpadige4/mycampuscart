@@ -1,6 +1,8 @@
 import { Mail, Heart, MapPin, Plus, Users, DollarSign } from "lucide-react";
+import { useGlobalStats } from '@/hooks/useStats';
 
 export const Footer = () => {
+  const { stats, loading } = useGlobalStats();
   return (
     <footer className="bg-black border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -108,24 +110,33 @@ export const Footer = () => {
           {/* Stats */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-white">Our Impact</h3>
-            <div className="space-y-3">
-              <div className="text-sm">
-                <div className="text-emerald-400 font-semibold">50,000+</div>
-                <div className="text-gray-400">Active Users</div>
+            {loading ? (
+              <div className="space-y-3">
+                <div className="animate-pulse bg-gray-700 h-12 rounded"></div>
+                <div className="animate-pulse bg-gray-700 h-12 rounded"></div>
+                <div className="animate-pulse bg-gray-700 h-12 rounded"></div>
+                <div className="animate-pulse bg-gray-700 h-12 rounded"></div>
               </div>
-              <div className="text-sm">
-                <div className="text-emerald-400 font-semibold">200,000+</div>
-                <div className="text-gray-400">Items Sold</div>
+            ) : (
+              <div className="space-y-3">
+                <div className="text-sm">
+                  <div className="text-emerald-400 font-semibold">{stats.totalUsers.toLocaleString()}+</div>
+                  <div className="text-gray-400">Active Users</div>
+                </div>
+                <div className="text-sm">
+                  <div className="text-emerald-400 font-semibold">{stats.totalProducts.toLocaleString()}+</div>
+                  <div className="text-gray-400">Items Listed</div>
+                </div>
+                <div className="text-sm">
+                  <div className="text-emerald-400 font-semibold">{stats.citiesServed}+</div>
+                  <div className="text-gray-400">Cities Served</div>
+                </div>
+                <div className="text-sm">
+                  <div className="text-emerald-400 font-semibold">{stats.totalTransactions.toLocaleString()}+</div>
+                  <div className="text-gray-400">Total Views</div>
+                </div>
               </div>
-              <div className="text-sm">
-                <div className="text-emerald-400 font-semibold">100+</div>
-                <div className="text-gray-400">Cities Served</div>
-              </div>
-              <div className="text-sm">
-                <div className="text-emerald-400 font-semibold">₹50Cr+</div>
-                <div className="text-gray-400">Transactions</div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
