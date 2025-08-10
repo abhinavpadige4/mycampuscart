@@ -1,1 +1,4 @@
 project_id = "utqpqrllgnhsvkplohal"
+
+[functions.clerk-auth-bridge]
+verify_jwt = false
