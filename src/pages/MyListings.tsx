@@ -48,8 +48,11 @@ export const MyListings = () => {
   const handleStatusToggle = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === 'active' ? 'sold' : 'active';
     try {
-      await updateProduct(id, { status: newStatus });
-      // Products will be refreshed automatically by the hook
+      console.log('Updating product status:', { id, currentStatus, newStatus });
+      const result = await updateProduct(id, { status: newStatus });
+      console.log('Update result:', result);
+      // Manually refresh the listings to see changes immediately
+      await loadUserListings();
     } catch (error) {
       console.error('Error updating listing status:', error);
     }
