@@ -25,11 +25,13 @@ export const Navbar = ({ onLoginClick }: NavbarProps) => {
             duration={2}
           >
             <div className="flex items-center space-x-3">
-              <img 
-                src="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" 
-                alt="MyCampusCart Logo" 
-                className="h-8 w-8 object-contain"
-              />
+              <div className="w-10 h-10 rounded-full bg-white/10 border-2 border-emerald-400/30 flex items-center justify-center p-1 overflow-hidden">
+                <img 
+                  src="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" 
+                  alt="MyCampusCart Logo" 
+                  className="w-full h-full object-contain rounded-full"
+                />
+              </div>
               <span className="text-2xl font-bold text-emerald-400">MyCampusCart</span>
             </div>
           </HoverBorderGradient>
