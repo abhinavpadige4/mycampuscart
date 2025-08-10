@@ -2,6 +2,7 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -17,15 +18,19 @@ export const Navbar = ({ onLoginClick }: NavbarProps) => {
     <nav className="bg-black border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div 
-            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+          <HoverBorderGradient
+            containerClassName="rounded-full cursor-pointer"
+            className="bg-background hover:bg-background/90 transition-colors"
             onClick={() => navigate('/')}
+            duration={2}
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 flex items-center justify-center">
-              <ShoppingCart className="h-5 w-5 text-white" />
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-emerald-600 flex items-center justify-center">
+                <ShoppingCart className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-2xl font-bold text-emerald-400">MyCampusCart</span>
             </div>
-            <span className="text-xl font-bold text-emerald-400">MyCampusCart</span>
-          </div>
+          </HoverBorderGradient>
           
           <div className="flex items-center space-x-4">
             <SignedOut>
