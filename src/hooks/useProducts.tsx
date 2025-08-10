@@ -159,8 +159,14 @@ export const useProducts = () => {
       setLoading(false);
     };
 
-    loadProducts();
-  }, [user]);
+    // Only load if user exists and we haven't loaded yet
+    if (user && products.length === 0 && allProducts.length === 0) {
+      loadProducts();
+    } else if (!user) {
+      setProducts([]);
+      setLoading(false);
+    }
+  }, [user?.id]); // Only depend on user ID to prevent infinite loops
 
   return {
     products,
