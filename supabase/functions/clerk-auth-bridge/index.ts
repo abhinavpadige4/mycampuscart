@@ -215,6 +215,77 @@ serve(async (req) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
 
+      case 'updateProduct':
+        // Get user profile ID for permission check
+        const { data: updateProfile } = await supabase
+          .from('user_profiles')
+          .select('id, role')
+          .eq('clerk_user_id', clerkUserId)
+          .single();
+
+        if (!updateProfile) {
+          return new Response(
+            JSON.stringify({ error: 'User profile not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const { data: updatedProduct, error: updateError } = await supabase
+          .from('products')
+          .update(data.updates)
+          .eq('id', data.productId)
+          .eq('user_id', updateProfile.id) // Ensure user owns the product
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error('Error updating product:', updateError);
+          return new Response(
+            JSON.stringify({ error: 'Failed to update product', details: updateError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ success: true, product: updatedProduct }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
+      case 'deleteProduct':
+        // Get user profile ID for permission check
+        const { data: deleteProfile } = await supabase
+          .from('user_profiles')
+          .select('id, role')
+          .eq('clerk_user_id', clerkUserId)
+          .single();
+
+        if (!deleteProfile) {
+          return new Response(
+            JSON.stringify({ error: 'User profile not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        const { error: deleteError } = await supabase
+          .from('products')
+          .delete()
+          .eq('id', data.productId)
+          .eq('user_id', deleteProfile.id); // Ensure user owns the product
+
+        if (deleteError) {
+          console.error('Error deleting product:', deleteError);
+          return new Response(
+            JSON.stringify({ error: 'Failed to delete product', details: deleteError.message }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ success: true }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
+
       default:
         return new Response(
           JSON.stringify({ error: 'Invalid action' }),

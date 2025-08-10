@@ -118,15 +118,27 @@ export const useProducts = () => {
   };
 
   const updateProduct = async (id: string, updates: Partial<Product>): Promise<Product> => {
+    if (!user) {
+      throw new Error('User must be authenticated');
+    }
+
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
+      // Use edge function for updates to handle RLS properly
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user.id,
+          action: 'updateProduct',
+          data: {
+            productId: id,
+            updates: updates
+          }
+        }
+      });
 
       if (error) throw error;
+      
+      // Refresh products after update
+      await fetchUserProducts();
       return data;
     } catch (error) {
       console.error('Error updating product:', error);
@@ -135,11 +147,21 @@ export const useProducts = () => {
   };
 
   const deleteProduct = async (id: string) => {
+    if (!user) {
+      throw new Error('User must be authenticated');
+    }
+
     try {
-      const { error } = await supabase
-        .from('products')
-        .delete()
-        .eq('id', id);
+      // Use edge function for deletes to handle RLS properly
+      const { data, error } = await supabase.functions.invoke('clerk-auth-bridge', {
+        body: {
+          clerkUserId: user.id,
+          action: 'deleteProduct',
+          data: {
+            productId: id
+          }
+        }
+      });
 
       if (error) throw error;
       
@@ -153,20 +175,31 @@ export const useProducts = () => {
   };
 
   useEffect(() => {
+    let isMounted = true;
+    
     const loadProducts = async () => {
+      if (!isMounted) return;
+      
       setLoading(true);
       await Promise.all([fetchUserProducts(), fetchAllProducts()]);
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
     };
 
-    // Only load if user exists and we haven't loaded yet
-    if (user && products.length === 0 && allProducts.length === 0) {
+    // Only load once when user changes
+    if (user?.id) {
       loadProducts();
-    } else if (!user) {
+    } else {
       setProducts([]);
+      setAllProducts([]);
       setLoading(false);
     }
-  }, [user?.id]); // Only depend on user ID to prevent infinite loops
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.id]); // Only depend on user ID
 
   return {
     products,
