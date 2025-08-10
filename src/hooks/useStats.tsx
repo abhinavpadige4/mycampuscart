@@ -29,14 +29,22 @@ export const useGlobalStats = () => {
     const fetchStats = async () => {
       try {
         // Get total users
-        const { count: usersCount } = await supabase
+        const { count: usersCount, error: usersError } = await supabase
           .from('user_profiles')
           .select('*', { count: 'exact', head: true });
 
+        if (usersError) {
+          console.error('Error fetching users count:', usersError);
+        }
+
         // Get total products
-        const { count: productsCount } = await supabase
+        const { count: productsCount, error: productsError } = await supabase
           .from('products')
           .select('*', { count: 'exact', head: true });
+
+        if (productsError) {
+          console.error('Error fetching products count:', productsError);
+        }
 
         // Get unique cities from products
         const { data: cities } = await supabase
