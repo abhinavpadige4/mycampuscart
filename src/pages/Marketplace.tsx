@@ -33,11 +33,11 @@ export const Marketplace = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-black via-black to-green-900/20 flex flex-col">
         <Navbar />
         
         <main className="flex-1">
-          <div className="max-w-7xl mx-auto p-6">
+          <div className="max-w-7xl mx-auto p-4 sm:p-6">
             <MarketplaceHeader onBackClick={() => navigate('/dashboard')} />
             
             <MarketplaceFilters
@@ -50,8 +50,15 @@ export const Marketplace = () => {
             />
 
             <div className="mb-6">
-              <p className="text-gray-400">
-                {loading ? 'Loading...' : `${products.length} ${products.length === 1 ? 'item' : 'items'} found`}
+              <p className="text-gray-300 text-sm sm:text-base">
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <LoadingSpinner size="sm" />
+                    Loading products...
+                  </span>
+                ) : (
+                  `${products.length} ${products.length === 1 ? 'item' : 'items'} found`
+                )}
               </p>
             </div>
 
