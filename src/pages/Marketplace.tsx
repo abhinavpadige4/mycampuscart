@@ -34,7 +34,7 @@ export const Marketplace = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-black flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navbar />
         
         <main className="flex-1">
@@ -51,7 +51,7 @@ export const Marketplace = () => {
             />
 
             <div className="mb-6">
-              <p className="text-gray-300 text-sm sm:text-base">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <LoadingSpinner size="sm" />
