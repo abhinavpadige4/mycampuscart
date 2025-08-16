@@ -18,12 +18,13 @@ export const Marketplace = () => {
   const [selectedLocation, setSelectedLocation] = useState("all");
 
   useEffect(() => {
+    console.log("Marketplace effect running with filters:", { searchTerm, selectedCategory, selectedLocation });
     fetchProducts({
-      category: selectedCategory,
-      location: selectedLocation,
-      searchTerm: searchTerm
+      category: selectedCategory !== "all" ? selectedCategory : undefined,
+      location: selectedLocation !== "all" ? selectedLocation : undefined,
+      searchTerm: searchTerm || undefined
     });
-  }, [searchTerm, selectedCategory, selectedLocation]);
+  }, [searchTerm, selectedCategory, selectedLocation, fetchProducts]);
 
   const handleClearFilters = () => {
     setSearchTerm("");

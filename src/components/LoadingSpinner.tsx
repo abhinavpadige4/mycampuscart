@@ -12,9 +12,6 @@ export const LoadingSpinner = ({ size = 'md', className = '' }: LoadingSpinnerPr
   };
 
   return (
-    <div className="relative">
-      <div className={`animate-spin rounded-full border-2 border-green-500/20 border-t-green-400 ${sizeClasses[size]} ${className}`} />
-      <div className={`animate-pulse absolute inset-0 rounded-full bg-gradient-to-r from-green-400/10 to-green-600/10 ${sizeClasses[size]}`} />
-    </div>
+    <div className={`animate-spin rounded-full border-2 border-green-500/30 border-t-green-400 ${sizeClasses[size]} ${className}`} />
   );
 };
