@@ -16,18 +16,11 @@ export const Navbar = ({ onLoginClick }: NavbarProps) => {
     <nav className="bg-black border-b border-green-800/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo Section - Simplified Design */}
+          {/* Brand Name Only */}
           <div 
-            className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => navigate('/')}
           >
-            <div className="w-10 h-10 rounded-full bg-green-500/20 border-2 border-green-400/40 flex items-center justify-center p-1 overflow-hidden">
-              <img 
-                src="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" 
-                alt="MyCampusCart Logo" 
-                className="w-full h-full object-contain rounded-full"
-              />
-            </div>
             <span className="text-2xl font-bold text-green-400">MyCampusCart</span>
           </div>
           

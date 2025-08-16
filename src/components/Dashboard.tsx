@@ -49,20 +49,57 @@ export const Dashboard = ({
   ] : userActions;
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2 text-white">
-          Welcome to your <span className="text-green-400">Dashboard</span>
-        </h1>
-        <p className="text-green-300">
-          {userRole === 'admin' 
-            ? "Manage the marketplace, block users, and monitor activity" 
-            : "Start buying or selling items with your campus community"
-          }
-        </p>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-black via-black to-green-900/20 p-4 sm:p-6">
+      <div className="max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="relative">
+            <h1 className="text-4xl sm:text-6xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
+                Welcome Back
+              </span>
+            </h1>
+            <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full opacity-60"></div>
+          </div>
+          <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            {userRole === 'admin' 
+              ? "Manage your marketplace, monitor activity, and ensure everything runs smoothly" 
+              : "Connect with your campus community. Buy, sell, and discover amazing deals."
+            }
+          </p>
+        </div>
 
-      <HoverEffect items={adminActions} />
+        {/* Actions Grid */}
+        <div className="bg-black/40 backdrop-blur-sm border border-green-500/20 rounded-2xl p-6 sm:p-8 shadow-2xl">
+          <h2 className="text-2xl font-bold text-white mb-8 text-center">Quick Actions</h2>
+          <HoverEffect items={adminActions} />
+        </div>
+
+        {/* Stats or Features Section */}
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-6 text-center">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingBag className="h-6 w-6 text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Safe Trading</h3>
+            <p className="text-gray-400 text-sm">Secure transactions within your campus community</p>
+          </div>
+          <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-6 text-center">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Users className="h-6 w-6 text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Community</h3>
+            <p className="text-gray-400 text-sm">Connect with students from your campus</p>
+          </div>
+          <div className="bg-gradient-to-br from-green-500/10 to-green-600/5 border border-green-500/20 rounded-xl p-6 text-center sm:col-span-2 lg:col-span-1">
+            <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BarChart3 className="h-6 w-6 text-green-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2">Easy Management</h3>
+            <p className="text-gray-400 text-sm">Simple tools to manage your listings</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
