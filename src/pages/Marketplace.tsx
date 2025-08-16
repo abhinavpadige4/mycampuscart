@@ -33,7 +33,7 @@ export const Marketplace = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-black via-black to-green-900/20 flex flex-col">
+      <div className="min-h-screen bg-black flex flex-col">
         <Navbar />
         
         <main className="flex-1">
