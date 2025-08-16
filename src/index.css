@@ -1,108 +1,102 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* MyCampusCart Design System - Modern Dark Marketplace Theme */
+/* MyCampusCart Design System - Green & Black Theme */
 
 @layer base {
   :root {
-    /* Dark marketplace theme */
+    /* Green & Black marketplace theme */
     --background: 220 13% 9%;
-    --foreground: 220 9% 95%;
+    --foreground: 120 100% 95%;
 
     --card: 220 13% 11%;
-    --card-foreground: 220 9% 95%;
+    --card-foreground: 120 100% 95%;
 
     --popover: 220 13% 11%;
-    --popover-foreground: 220 9% 95%;
+    --popover-foreground: 120 100% 95%;
 
-    --primary: 142 76% 48%;
+    --primary: 120 60% 50%;
     --primary-foreground: 220 13% 9%;
 
     --secondary: 220 13% 15%;
-    --secondary-foreground: 220 9% 90%;
+    --secondary-foreground: 120 100% 90%;
 
     --muted: 220 13% 15%;
-    --muted-foreground: 220 9% 65%;
+    --muted-foreground: 120 20% 65%;
 
-    --accent: 262 83% 58%;
-    --accent-foreground: 220 9% 95%;
+    --accent: 120 60% 45%;
+    --accent-foreground: 220 13% 9%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 220 9% 95%;
+    --destructive-foreground: 120 100% 95%;
 
-    --border: 220 13% 18%;
+    --border: 120 20% 18%;
     --input: 220 13% 15%;
-    --ring: 142 76% 48%;
+    --ring: 120 60% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom marketplace tokens */
-    --gradient-primary: linear-gradient(135deg, hsl(142 76% 48%), hsl(262 83% 58%));
+    /* Custom green marketplace tokens */
+    --gradient-primary: linear-gradient(135deg, hsl(120 60% 50%), hsl(120 80% 40%));
     --gradient-card: linear-gradient(145deg, hsl(220 13% 11%), hsl(220 13% 13%));
     --gradient-hero: linear-gradient(135deg, hsl(220 13% 9%), hsl(220 13% 12%));
     
     --shadow-card: 0 4px 24px hsl(220 13% 4% / 0.4);
     --shadow-elevated: 0 8px 40px hsl(220 13% 4% / 0.6);
-    --shadow-glow: 0 0 20px hsl(142 76% 48% / 0.2);
+    --shadow-glow: 0 0 20px hsl(120 60% 50% / 0.3);
 
-    --price-color: 142 76% 58%;
+    --price-color: 120 60% 58%;
     --warning-color: 45 93% 58%;
-    --success-color: 142 76% 48%;
+    --success-color: 120 60% 50%;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-border: 120 20% 91%;
+    --sidebar-ring: 120 60% 59.8%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --foreground: 120 40% 98%;
 
     --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 120 40% 98%;
 
     --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover-foreground: 120 40% 98%;
 
-    --primary: 210 40% 98%;
+    --primary: 120 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 120 40% 98%;
 
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 120 20.2% 65.1%;
 
     --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 120 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 120 40% 98%;
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 120 26.8% 83.9%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 120 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-ring: 120 91.2% 59.8%;
   }
 }
 
@@ -117,7 +111,7 @@
 }
 
 @layer components {
-  /* Marketplace specific components */
+  /* Green marketplace specific components */
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -179,5 +173,4 @@
       gap: 1rem;
     }
   }
-
 }

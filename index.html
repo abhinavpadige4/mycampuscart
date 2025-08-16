@@ -1,57 +1,48 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="MyCampusCart - Your trusted marketplace for buying and selling used items within the campus community. Find great deals on textbooks, electronics, furniture and more." />
-    <meta name="keywords" content="campus marketplace, student marketplace, buy sell textbooks, used electronics, college furniture, student deals" />
-    <meta name="author" content="MyCampusCart" />
-    <meta name="robots" content="index, follow" />
     
-    <!-- Open Graph / Facebook -->
+    <!-- SEO Meta Tags -->
+    <title>MyCampusCart - Buy & Sell Items on Campus</title>
+    <meta name="description" content="Buy and sell used items with other students on your campus. Find great deals on textbooks, electronics, furniture and more." />
+    <meta name="keywords" content="campus marketplace, student marketplace, buy sell items, used textbooks, student deals" />
+    <meta name="author" content="MyCampusCart" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="MyCampusCart - Campus Marketplace" />
+    <meta property="og:description" content="Buy and sell items with students on your campus" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://mycampuscart.com/" />
-    <meta property="og:title" content="MyCampusCart - Campus Marketplace for Students" />
-    <meta property="og:description" content="Your trusted marketplace for buying and selling used items within the campus community. Find great deals on textbooks, electronics, furniture and more." />
-    <meta property="og:image" content="https://mycampuscart.com/og-image.jpg" />
+    <meta property="og:image" content="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" />
     
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://mycampuscart.com/" />
-    <meta property="twitter:title" content="MyCampusCart - Campus Marketplace for Students" />
-    <meta property="twitter:description" content="Your trusted marketplace for buying and selling used items within the campus community." />
-    <meta property="twitter:image" content="https://mycampuscart.com/og-image.jpg" />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="MyCampusCart - Campus Marketplace" />
+    <meta name="twitter:description" content="Buy and sell items with students on your campus" />
+    <meta name="twitter:image" content="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" />
     
     <!-- Canonical URL -->
     <link rel="canonical" href="https://mycampuscart.com/" />
     
-    <!-- Favicon -->
-    <link rel="icon" href="/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png" type="image/png" style="border-radius: 50%">
+    <!-- Circular Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%2316a34a'/><image href='/lovable-uploads/cfdb973e-a017-45a1-b542-e765a04f6181.png' x='10' y='10' width='80' height='80' clip-path='circle(40px at 50px 50px)'/></svg>" type="image/svg+xml">
     
     <!-- DNS prefetch for external domains -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//clerk.com" />
-    <link rel="dns-prefetch" href="//utqpqrllgnhsvkplohal.supabase.co" />
     
-    <title>MyCampusCart - Campus Marketplace for Students</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "MyCampusCart",
-      "description": "Campus marketplace for buying and selling used items within the student community",
-      "url": "https://mycampuscart.com",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://mycampuscart.com/marketplace?search={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    }
-    </script>
+    <!-- Performance hints -->
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#16a34a" />
   </head>
-
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
