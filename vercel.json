@@ -54,13 +54,37 @@
       ]
     },
     {
-      "source": "/:all*.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)",
+      "source": "/(.*\\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot))",
       "headers": [
         {
           "key": "Cache-Control",
           "value": "public, max-age=86400"
         }
       ]
+    }
+  ]
+}
+{
+  "version": 2,
+  "name": "my-vite-app",
+  "regions": ["all"],
+  "alias": "my-vite-app.vercel.app",
+  "env": {
+    "API_URL": "@api-url",
+    "CLERK_FRONTEND_API": "@clerk-frontend-api",
+    "SUPABASE_URL": "@supabase-url",
+    "SUPABASE_ANON_KEY": "@supabase-anon-key"
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
